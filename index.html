@@ -9,356 +9,153 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <style>
-  /* ═══════════════ DARK PASTEL THEME ═══════════════ */
   [data-theme="dark"] {
-    --bg: #121318;
-    --bg-card: #1a1b23;
-    --bg-card-hover: #1f2029;
-    --border: #2a2b36;
-    --border-accent: #363748;
-    --text: #b8bcc8;
-    --text-dim: #6e7283;
-    --text-bright: #dcdfe8;
-    --heading: #eceef4;
-    --formula-bg: #14151c;
-    --formula-border: #252636;
-
-    /* pastel accents — dark mode */
-    --accent-blue: #7eb8f0;
-    --accent-teal: #6ecfc4;
-    --accent-amber: #efc07a;
-    --accent-rose: #e89ab8;
-    --accent-violet: #b8a4f0;
-    --accent-green: #7ed6a5;
-    --accent-red: #f09e9e;
-
-    /* pastel bg tints */
-    --tint-blue: rgba(126,184,240,0.08);
-    --tint-teal: rgba(110,207,196,0.08);
-    --tint-amber: rgba(239,192,122,0.08);
-    --tint-rose: rgba(232,154,184,0.08);
-    --tint-violet: rgba(184,164,240,0.08);
-    --tint-green: rgba(126,214,165,0.08);
-
-    --toggle-bg: #2a2b36;
-    --toggle-knob: #eceef4;
-    --toggle-icon: "🌙";
+    --bg: #121318; --bg-card: #1a1b23; --bg-card-hover: #1f2029;
+    --border: #2a2b36; --border-accent: #363748;
+    --text: #b8bcc8; --text-dim: #6e7283; --text-bright: #dcdfe8; --heading: #eceef4;
+    --formula-bg: #14151c; --formula-border: #252636;
+    --accent-blue: #7eb8f0; --accent-teal: #6ecfc4; --accent-amber: #efc07a;
+    --accent-rose: #e89ab8; --accent-violet: #b8a4f0; --accent-green: #7ed6a5; --accent-red: #f09e9e;
+    --tint-blue: rgba(126,184,240,0.08); --tint-teal: rgba(110,207,196,0.08);
+    --tint-amber: rgba(239,192,122,0.08); --tint-rose: rgba(232,154,184,0.08);
+    --tint-violet: rgba(184,164,240,0.08); --tint-green: rgba(126,214,165,0.08);
+    --toggle-bg: #2a2b36; --toggle-knob: #eceef4; --toggle-icon: "🌙";
   }
-
-  /* ═══════════════ LIGHT PASTEL THEME ═══════════════ */
   [data-theme="light"] {
-    --bg: #f5f3f0;
-    --bg-card: #ffffff;
-    --bg-card-hover: #faf9f7;
-    --border: #e2dfd9;
-    --border-accent: #d4d0c8;
-    --text: #4a4650;
-    --text-dim: #8a8694;
-    --text-bright: #2c2830;
-    --heading: #1e1a24;
-    --formula-bg: #f9f8f5;
-    --formula-border: #e8e5de;
+    --bg: #f5f3f0; --bg-card: #ffffff; --bg-card-hover: #faf9f7;
+    --border: #e2dfd9; --border-accent: #d4d0c8;
+    --text: #4a4650; --text-dim: #8a8694; --text-bright: #2c2830; --heading: #1e1a24;
+    --formula-bg: #f9f8f5; --formula-border: #e8e5de;
+    --accent-blue: #4a8fd4; --accent-teal: #3aaa9e; --accent-amber: #c8922e;
+    --accent-rose: #c46e90; --accent-violet: #8872d4; --accent-green: #45a872; --accent-red: #d47272;
+    --tint-blue: rgba(74,143,212,0.07); --tint-teal: rgba(58,170,158,0.07);
+    --tint-amber: rgba(200,146,46,0.07); --tint-rose: rgba(196,110,144,0.07);
+    --tint-violet: rgba(136,114,212,0.07); --tint-green: rgba(69,168,114,0.07);
+    --toggle-bg: #e2dfd9; --toggle-knob: #ffffff; --toggle-icon: "☀️";
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; line-height:1.7; min-height:100vh; transition:background .35s,color .35s; }
+  .katex { color:var(--text-bright); font-size:1.08em; }
+  .formula-box .katex, .cdf-box .katex { font-size:1.15em; }
 
-    /* pastel accents — light mode (slightly deeper for contrast) */
-    --accent-blue: #4a8fd4;
-    --accent-teal: #3aaa9e;
-    --accent-amber: #c8922e;
-    --accent-rose: #c46e90;
-    --accent-violet: #8872d4;
-    --accent-green: #45a872;
-    --accent-red: #d47272;
+  /* Toggle */
+  .theme-toggle { position:fixed; top:20px; right:24px; z-index:999; width:56px; height:30px; background:var(--toggle-bg); border:1px solid var(--border); border-radius:20px; cursor:pointer; transition:background .3s,border-color .3s; display:flex; align-items:center; padding:0 3px; }
+  .theme-toggle:hover { border-color:var(--accent-violet); }
+  .toggle-knob { width:24px; height:24px; background:var(--toggle-knob); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; box-shadow:0 1px 4px rgba(0,0,0,.15); transition:transform .3s cubic-bezier(.4,0,.2,1),background .3s; }
+  .toggle-knob::after { content:var(--toggle-icon); }
+  [data-theme="light"] .toggle-knob { transform:translateX(26px); }
 
-    /* pastel bg tints */
-    --tint-blue: rgba(74,143,212,0.07);
-    --tint-teal: rgba(58,170,158,0.07);
-    --tint-amber: rgba(200,146,46,0.07);
-    --tint-rose: rgba(196,110,144,0.07);
-    --tint-violet: rgba(136,114,212,0.07);
-    --tint-green: rgba(69,168,114,0.07);
+  /* Hero */
+  .hero { padding:80px 40px 60px; text-align:center; position:relative; overflow:hidden; border-bottom:1px solid var(--border); transition:border-color .35s; }
+  .hero::before { content:''; position:absolute; top:-120px; left:50%; transform:translateX(-50%); width:600px; height:600px; background:radial-gradient(circle,var(--tint-violet) 0%,transparent 70%); pointer-events:none; }
+  .hero-label { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--accent-violet); margin-bottom:16px; }
+  .hero h1 { font-family:'Crimson Pro',serif; font-size:clamp(36px,5vw,56px); font-weight:300; color:var(--heading); letter-spacing:-.5px; margin-bottom:12px; }
+  .hero h1 em { font-style:italic; color:var(--accent-blue); }
+  .hero p { font-size:15px; color:var(--text-dim); max-width:520px; margin:0 auto; }
 
-    --toggle-bg: #e2dfd9;
-    --toggle-knob: #ffffff;
-    --toggle-icon: "☀️";
-  }
+  /* Nav */
+  .toc { position:sticky; top:0; z-index:100; background:var(--bg); border-bottom:1px solid var(--border); padding:12px 40px; overflow-x:auto; white-space:nowrap; display:flex; gap:6px; align-items:center; transition:background .35s,border-color .35s; }
+  [data-theme="dark"] .toc { background:rgba(18,19,24,.88); backdrop-filter:blur(16px); }
+  [data-theme="light"] .toc { background:rgba(245,243,240,.92); backdrop-filter:blur(16px); }
+  .toc a { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.5px; color:var(--text-dim); text-decoration:none; padding:6px 14px; border-radius:20px; border:1px solid transparent; transition:all .2s; flex-shrink:0; }
+  .toc a:hover { color:var(--accent-violet); border-color:var(--border-accent); background:var(--tint-violet); }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  .container { max-width:1200px; margin:0 auto; padding:40px 24px 120px; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    line-height: 1.7;
-    min-height: 100vh;
-    transition: background 0.35s ease, color 0.35s ease;
-  }
+  /* Section */
+  .section { margin-bottom:64px; }
+  .section-header { display:flex; align-items:center; gap:16px; margin-bottom:28px; padding-bottom:16px; border-bottom:1px solid var(--border); transition:border-color .35s; }
+  .section-number { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent-blue); background:var(--tint-blue); padding:4px 12px; border-radius:12px; flex-shrink:0; }
+  .section-title { font-family:'Crimson Pro',serif; font-size:28px; font-weight:600; color:var(--heading); letter-spacing:-.3px; }
 
-  .katex { color: var(--text-bright); font-size: 1.08em; }
-  .formula-box .katex { font-size: 1.15em; }
+  /* Card grid */
+  .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(520px,1fr)); gap:20px; }
+  @media(max-width:600px){ .card-grid{grid-template-columns:1fr;} }
 
-  /* ─── THEME TOGGLE ─── */
-  .theme-toggle {
-    position: fixed;
-    top: 20px; right: 24px;
-    z-index: 999;
-    width: 56px; height: 30px;
-    background: var(--toggle-bg);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background 0.3s, border-color 0.3s;
-    display: flex;
-    align-items: center;
-    padding: 0 3px;
-  }
-  .theme-toggle:hover { border-color: var(--accent-violet); }
-  .toggle-knob {
-    width: 24px; height: 24px;
-    background: var(--toggle-knob);
-    border-radius: 50%;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-  }
-  .toggle-knob::after { content: var(--toggle-icon); }
-  [data-theme="light"] .toggle-knob { transform: translateX(26px); }
+  /* Card */
+  .card { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:border-color .25s,background .25s,box-shadow .25s; }
+  .card:hover { border-color:var(--border-accent); background:var(--bg-card-hover); box-shadow:0 2px 16px rgba(0,0,0,.06); }
+  .card-top { padding:24px 28px 20px; }
+  .card-label { display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; padding:3px 10px; border-radius:6px; margin-bottom:14px; }
+  .label-counting { color:var(--accent-teal); background:var(--tint-teal); }
+  .label-probability { color:var(--accent-violet); background:var(--tint-violet); }
+  .label-distribution { color:var(--accent-amber); background:var(--tint-amber); }
+  .label-advanced { color:var(--accent-rose); background:var(--tint-rose); }
+  .label-identity { color:var(--accent-green); background:var(--tint-green); }
+  .label-fundamental { color:var(--accent-blue); background:var(--tint-blue); }
 
-  /* ─── HERO ─── */
-  .hero {
-    padding: 80px 40px 60px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    border-bottom: 1px solid var(--border);
-    transition: border-color 0.35s;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -120px; left: 50%; transform: translateX(-50%);
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, var(--tint-violet) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .hero-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-    color: var(--accent-violet); margin-bottom: 16px;
-  }
-  .hero h1 {
-    font-family: 'Crimson Pro', serif;
-    font-size: clamp(36px, 5vw, 56px);
-    font-weight: 300; color: var(--heading);
-    letter-spacing: -0.5px; margin-bottom: 12px;
-  }
-  .hero h1 em { font-style: italic; color: var(--accent-blue); }
-  .hero p {
-    font-size: 15px; color: var(--text-dim);
-    max-width: 520px; margin: 0 auto;
-  }
+  .card-name { font-family:'Crimson Pro',serif; font-size:22px; font-weight:600; color:var(--heading); margin-bottom:8px; }
+  .card-name .sub { color:var(--text-dim); font-size:16px; }
+  .card-intuition { font-size:14px; color:var(--text-dim); line-height:1.65; margin-bottom:16px; }
 
-  /* ─── NAV ─── */
-  .toc {
-    position: sticky; top: 0; z-index: 100;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    padding: 12px 40px;
-    overflow-x: auto; white-space: nowrap;
-    display: flex; gap: 6px; align-items: center;
-    transition: background 0.35s, border-color 0.35s;
-  }
-  [data-theme="dark"] .toc { background: rgba(18,19,24,0.88); backdrop-filter: blur(16px); }
-  [data-theme="light"] .toc { background: rgba(245,243,240,0.92); backdrop-filter: blur(16px); }
+  /* Formula box */
+  .formula-box { background:var(--formula-bg); border:1px solid var(--formula-border); border-radius:8px; padding:18px 20px; margin-bottom:16px; text-align:center; position:relative; overflow:hidden; transition:background .35s,border-color .35s; }
+  .formula-box::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:3px 0 0 3px; }
+  .formula-box.blue::before { background:var(--accent-blue); }
+  .formula-box.teal::before { background:var(--accent-teal); }
+  .formula-box.amber::before { background:var(--accent-amber); }
+  .formula-box.violet::before { background:var(--accent-violet); }
+  .formula-box.rose::before { background:var(--accent-rose); }
+  .formula-box.green::before { background:var(--accent-green); }
+  .formula-note { font-family:'DM Sans',sans-serif; font-size:12px; color:var(--text-dim); margin-top:10px; font-style:italic; }
 
-  .toc a {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; letter-spacing: 0.5px;
-    color: var(--text-dim); text-decoration: none;
-    padding: 6px 14px; border-radius: 20px;
-    border: 1px solid transparent; transition: all 0.2s; flex-shrink: 0;
-  }
-  .toc a:hover {
-    color: var(--accent-violet); border-color: var(--border-accent); background: var(--tint-violet);
-  }
+  /* CDF box */
+  .cdf-box { background:var(--formula-bg); border:1px solid var(--formula-border); border-radius:8px; padding:14px 20px; margin-bottom:16px; text-align:center; position:relative; overflow:hidden; transition:background .35s,border-color .35s; border-left:3px solid var(--accent-blue); }
+  .cdf-label { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent-blue); margin-bottom:6px; }
+  .cdf-box .formula-note { margin-top:8px; }
 
-  .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px 120px; }
+  /* Example */
+  .example-block { background:var(--formula-bg); border-top:1px solid var(--formula-border); padding:20px 28px; transition:background .35s,border-color .35s; }
+  .example-tag { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent-amber); margin-bottom:10px; }
+  .example-q { font-family:'Crimson Pro',serif; font-size:16px; color:var(--text-bright); font-style:italic; margin-bottom:14px; line-height:1.6; }
+  .example-steps { font-size:13.5px; color:var(--text); line-height:2; }
+  .example-steps .step-label { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent-teal); letter-spacing:1px; margin-right:4px; }
+  .example-answer { margin-top:12px; padding:10px 16px; background:var(--tint-blue); border-left:3px solid var(--accent-blue); border-radius:0 6px 6px 0; font-size:15px; color:var(--accent-blue); font-weight:600; }
 
-  /* ─── SECTION ─── */
-  .section { margin-bottom: 64px; }
-  .section-header {
-    display: flex; align-items: center; gap: 16px;
-    margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
-    transition: border-color 0.35s;
-  }
-  .section-number {
-    font-family: 'JetBrains Mono', monospace; font-size: 12px;
-    color: var(--accent-blue); background: var(--tint-blue);
-    padding: 4px 12px; border-radius: 12px; flex-shrink: 0;
-  }
-  .section-title {
-    font-family: 'Crimson Pro', serif; font-size: 28px;
-    font-weight: 600; color: var(--heading); letter-spacing: -0.3px;
-  }
+  .card-wide { grid-column:1/-1; }
+  .tip-box { background:var(--tint-amber); border:1px dashed color-mix(in srgb,var(--accent-amber) 30%,transparent); border-radius:8px; padding:14px 18px; margin-top:14px; font-size:13px; color:var(--accent-amber); line-height:1.65; }
+  .tip-box strong { font-weight:600; }
+  .dual-formula { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media(max-width:600px){ .dual-formula{grid-template-columns:1fr;} }
 
-  /* ─── CARD GRID ─── */
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(520px, 1fr));
-    gap: 20px;
-  }
-  @media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
+  .guide-table { width:100%; border-collapse:collapse; font-size:13.5px; margin-top:12px; }
+  .guide-table th { text-align:left; padding:10px 12px; color:var(--heading); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:1px; border-bottom:2px solid var(--border-accent); }
+  .guide-table td { padding:10px 12px; border-bottom:1px solid var(--border); }
+  .guide-table td:nth-child(2) { color:var(--accent-teal); }
+  .guide-table td:nth-child(3) { color:var(--text-dim); }
+  .guide-table tr:last-child td { border-bottom:none; }
 
-  /* ─── CARD ─── */
-  .card {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 12px; overflow: hidden;
-    transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
-  }
-  .card:hover {
-    border-color: var(--border-accent); background: var(--bg-card-hover);
-    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
-  }
-  .card-top { padding: 24px 28px 20px; }
-  .card-label {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    letter-spacing: 1.5px; text-transform: uppercase;
-    padding: 3px 10px; border-radius: 6px; margin-bottom: 14px;
-  }
-  .label-counting { color: var(--accent-teal); background: var(--tint-teal); }
-  .label-probability { color: var(--accent-violet); background: var(--tint-violet); }
-  .label-distribution { color: var(--accent-amber); background: var(--tint-amber); }
-  .label-advanced { color: var(--accent-rose); background: var(--tint-rose); }
-  .label-identity { color: var(--accent-green); background: var(--tint-green); }
-
-  .card-name {
-    font-family: 'Crimson Pro', serif; font-size: 22px;
-    font-weight: 600; color: var(--heading); margin-bottom: 8px;
-  }
-  .card-name .sub { color: var(--text-dim); font-size: 16px; }
-  .card-intuition {
-    font-size: 14px; color: var(--text-dim); line-height: 1.65; margin-bottom: 16px;
-  }
-
-  /* ─── FORMULA BOX ─── */
-  .formula-box {
-    background: var(--formula-bg); border: 1px solid var(--formula-border);
-    border-radius: 8px; padding: 18px 20px; margin-bottom: 16px;
-    text-align: center; position: relative; overflow: hidden;
-    transition: background 0.35s, border-color 0.35s;
-  }
-  .formula-box::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-    width: 3px; border-radius: 3px 0 0 3px;
-  }
-  .formula-box.blue::before { background: var(--accent-blue); }
-  .formula-box.teal::before { background: var(--accent-teal); }
-  .formula-box.amber::before { background: var(--accent-amber); }
-  .formula-box.violet::before { background: var(--accent-violet); }
-  .formula-box.rose::before { background: var(--accent-rose); }
-  .formula-box.green::before { background: var(--accent-green); }
-
-  .formula-note {
-    font-family: 'DM Sans', sans-serif; font-size: 12px;
-    color: var(--text-dim); margin-top: 10px; font-style: italic;
-  }
-
-  /* ─── EXAMPLE BLOCK ─── */
-  .example-block {
-    background: var(--formula-bg); border-top: 1px solid var(--formula-border); padding: 20px 28px;
-    transition: background 0.35s, border-color 0.35s;
-  }
-  .example-tag {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--accent-amber); margin-bottom: 10px;
-  }
-  .example-q {
-    font-family: 'Crimson Pro', serif; font-size: 16px;
-    color: var(--text-bright); font-style: italic;
-    margin-bottom: 14px; line-height: 1.6;
-  }
-  .example-steps { font-size: 13.5px; color: var(--text); line-height: 2; }
-  .example-steps .step-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    color: var(--accent-teal); letter-spacing: 1px; margin-right: 4px;
-  }
-  .example-answer {
-    margin-top: 12px; padding: 10px 16px;
-    background: var(--tint-blue);
-    border-left: 3px solid var(--accent-blue);
-    border-radius: 0 6px 6px 0;
-    font-size: 15px; color: var(--accent-blue); font-weight: 600;
-  }
-
-  .card-wide { grid-column: 1 / -1; }
-
-  .tip-box {
-    background: var(--tint-amber); border: 1px dashed var(--accent-amber);
-    border-radius: 8px; padding: 14px 18px; margin-top: 14px;
-    font-size: 13px; color: var(--accent-amber); line-height: 1.65;
-    border-color: color-mix(in srgb, var(--accent-amber) 30%, transparent);
-  }
-  .tip-box strong { font-weight: 600; }
-
-  /* ─── DECISION GUIDE TABLE ─── */
-  .guide-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 12px; }
-  .guide-table th {
-    text-align: left; padding: 10px 12px; color: var(--heading);
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    letter-spacing: 1px; border-bottom: 2px solid var(--border-accent);
-  }
-  .guide-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-  .guide-table td:nth-child(2) { color: var(--accent-teal); }
-  .guide-table td:nth-child(3) { color: var(--text-dim); }
-  .guide-table tr:last-child td { border-bottom: none; }
-
-  .footer {
-    text-align: center; padding: 40px;
-    font-size: 12px; color: var(--text-dim); border-top: 1px solid var(--border);
-    transition: border-color 0.35s;
-  }
-
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border-accent); border-radius: 3px; }
-
-  @media print {
-    .theme-toggle { display: none; }
-    .toc { display: none; }
-    .card { break-inside: avoid; }
-  }
+  .footer { text-align:center; padding:40px; font-size:12px; color:var(--text-dim); border-top:1px solid var(--border); transition:border-color .35s; }
+  ::-webkit-scrollbar { width:6px; height:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--border-accent); border-radius:3px; }
+  @media print { .theme-toggle{display:none;} .toc{display:none;} .card{break-inside:avoid;} }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════ THEME TOGGLE ═══════════════ -->
-<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-  <div class="toggle-knob"></div>
-</button>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"><div class="toggle-knob"></div></button>
 
-<!-- ═══════════════ HERO ═══════════════ -->
 <div class="hero">
   <div class="hero-label">Reference Sheet</div>
   <h1>Probability &amp; <em>Combinatorics</em></h1>
   <p>Concepts, formulas, and worked examples for quant interview preparation. Every card = one concept you must know cold.</p>
 </div>
 
-<!-- ═══════════════ TOC ═══════════════ -->
 <nav class="toc">
   <a href="#counting">Counting</a>
   <a href="#probability">Probability Rules</a>
   <a href="#conditional">Conditional &amp; Bayes</a>
   <a href="#ev">E[X] &amp; Var</a>
+  <a href="#joint">Joint, Cov &amp; Correlation</a>
   <a href="#distributions">Distributions</a>
+  <a href="#limit">Limit Theorems</a>
   <a href="#advanced">Advanced &amp; Tricks</a>
 </nav>
 
 <div class="container">
 
-<!-- ╔═══════════════════════════════════════════╗ -->
-<!-- ║  SECTION 1 — COUNTING                     ║ -->
-<!-- ╚═══════════════════════════════════════════╝ -->
+<!-- ═══════════════ 01 — COUNTING ═══════════════ -->
 <div class="section" id="counting">
   <div class="section-header">
     <span class="section-number">01</span>
@@ -370,18 +167,16 @@
       <div class="card-top">
         <div class="card-label label-counting">Counting</div>
         <div class="card-name">Factorial</div>
-        <div class="card-intuition">The number of ways to arrange <em>n</em> distinct objects in a line. Every slot has one fewer option than the last.</div>
+        <div class="card-intuition">The number of ways to arrange <em>n</em> distinct objects in a line.</div>
         <div class="formula-box teal">
-          $$n! = n \times (n-1) \times (n-2) \times \cdots \times 1$$
+          $$n! = n \times (n-1) \times \cdots \times 1$$
           <div class="formula-note">Convention: \(0! = 1\)</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">How many ways can 5 people line up for a photo?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(5! = 5 \times 4 \times 3 \times 2 \times 1\)
-        </div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(5! = 120\)</div>
         <div class="example-answer">\(= 120\)</div>
       </div>
     </div>
@@ -390,17 +185,13 @@
       <div class="card-top">
         <div class="card-label label-counting">Counting</div>
         <div class="card-name">Multiplication Principle</div>
-        <div class="card-intuition">If task A has \(m\) outcomes and task B has \(n\) outcomes, then doing A <strong>then</strong> B gives \(m \times n\) total outcomes.</div>
-        <div class="formula-box teal">
-          $$\text{Total} = n_1 \times n_2 \times \cdots \times n_k$$
-        </div>
+        <div class="card-intuition">If task A has \(m\) outcomes and task B has \(n\) outcomes, doing A then B gives \(m \times n\) outcomes.</div>
+        <div class="formula-box teal">$$\text{Total} = n_1 \times n_2 \times \cdots \times n_k$$</div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">A license plate has 3 letters then 4 digits. How many possible plates?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(26^3 \times 10^4\)
-        </div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(26^3 \times 10^4\)</div>
         <div class="example-answer">\(= 175{,}760{,}000\)</div>
       </div>
     </div>
@@ -409,17 +200,13 @@
       <div class="card-top">
         <div class="card-label label-counting">Counting</div>
         <div class="card-name">Permutations <span class="sub">(without repetition)</span></div>
-        <div class="card-intuition">Choose \(r\) items from \(n\) and <strong>order matters</strong>. You're filling \(r\) ranked slots from a pool of \(n\).</div>
-        <div class="formula-box teal">
-          $$P(n, r) = \frac{n!}{(n - r)!}$$
-        </div>
+        <div class="card-intuition">Choose \(r\) from \(n\), <strong>order matters</strong>. Filling \(r\) ranked slots.</div>
+        <div class="formula-box teal">$$P(n, r) = \frac{n!}{(n - r)!}$$</div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">A race has 10 runners. How many ways to award Gold, Silver, Bronze?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(P(10, 3) = \dfrac{10!}{7!} = 10 \times 9 \times 8\)
-        </div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(P(10,3) = 10 \times 9 \times 8\)</div>
         <div class="example-answer">\(= 720\)</div>
       </div>
     </div>
@@ -428,17 +215,13 @@
       <div class="card-top">
         <div class="card-label label-counting">Counting</div>
         <div class="card-name">Permutations <span class="sub">(with repetition)</span></div>
-        <div class="card-intuition">Each of the \(r\) slots can be any of \(n\) options — items can repeat. Think: passwords, PINs.</div>
-        <div class="formula-box teal">
-          $$n^r$$
-        </div>
+        <div class="card-intuition">Each of \(r\) slots can be any of \(n\) options — repeats allowed. Think: PINs, passwords.</div>
+        <div class="formula-box teal">$$n^r$$</div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">How many 4-digit PINs (digits 0–9)?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(10^4\)
-        </div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(10^4\)</div>
         <div class="example-answer">\(= 10{,}000\)</div>
       </div>
     </div>
@@ -447,7 +230,7 @@
       <div class="card-top">
         <div class="card-label label-counting">Counting</div>
         <div class="card-name">Multiset Permutations</div>
-        <div class="card-intuition">Arrange \(n\) objects where some are identical. Divide out the redundant orderings within each group of duplicates.</div>
+        <div class="card-intuition">Arrange \(n\) objects where some are identical. Divide out redundant orderings.</div>
         <div class="formula-box teal">
           $$\frac{n!}{n_1!\; n_2!\; \cdots\; n_k!}$$
           <div class="formula-note">where \(n_1 + n_2 + \cdots + n_k = n\)</div>
@@ -456,10 +239,7 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">How many distinct arrangements of the letters in MISSISSIPPI?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> 11 letters: M=1, I=4, S=4, P=2<br>
-          \(\dfrac{11!}{1!\cdot 4!\cdot 4!\cdot 2!}\)
-        </div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\dfrac{11!}{1!\cdot 4!\cdot 4!\cdot 2!}\)</div>
         <div class="example-answer">\(= 34{,}650\)</div>
       </div>
     </div>
@@ -468,17 +248,13 @@
       <div class="card-top">
         <div class="card-label label-counting">Counting</div>
         <div class="card-name">Combinations <span class="sub">(without repetition)</span></div>
-        <div class="card-intuition">Choose \(r\) items from \(n\) where <strong>order does NOT matter</strong>. It's the permutation formula divided by \(r!\) to remove duplicate orderings.</div>
-        <div class="formula-box teal">
-          $$\binom{n}{r} = \frac{n!}{r!\,(n - r)!}$$
-        </div>
+        <div class="card-intuition">Choose \(r\) from \(n\), <strong>order does NOT matter</strong>. Permutations divided by \(r!\).</div>
+        <div class="formula-box teal">$$\binom{n}{r} = \frac{n!}{r!\,(n - r)!}$$</div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">A committee of 3 is chosen from 8 people. How many ways?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(\dbinom{8}{3} = \dfrac{8!}{3!\cdot 5!} = \dfrac{8 \times 7 \times 6}{3 \times 2 \times 1}\)
-        </div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\dbinom{8}{3} = \dfrac{8 \times 7 \times 6}{6}\)</div>
         <div class="example-answer">\(= 56\)</div>
       </div>
     </div>
@@ -487,17 +263,13 @@
       <div class="card-top">
         <div class="card-label label-counting">Counting</div>
         <div class="card-name">Combinations with Repetition <span class="sub">(Stars &amp; Bars)</span></div>
-        <div class="card-intuition">Choose \(r\) items from \(n\) types where repeats are allowed and order doesn't matter. Equivalent to distributing \(r\) identical balls into \(n\) distinct bins.</div>
-        <div class="formula-box teal">
-          $$\binom{n + r - 1}{r} = \frac{(n + r - 1)!}{r!\,(n - 1)!}$$
-        </div>
+        <div class="card-intuition">Choose \(r\) from \(n\) types, repeats OK, order doesn't matter. Distributing \(r\) balls into \(n\) bins.</div>
+        <div class="formula-box teal">$$\binom{n + r - 1}{r} = \frac{(n + r - 1)!}{r!\,(n - 1)!}$$</div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">A shop has 4 flavors of ice cream. You buy 6 scoops. How many combinations?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(n=4,\; r=6 \;\Rightarrow\; \dbinom{9}{6} = 84\)
-        </div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\dbinom{9}{6} = 84\)</div>
         <div class="example-answer">\(= 84\)</div>
       </div>
     </div>
@@ -506,17 +278,13 @@
       <div class="card-top">
         <div class="card-label label-counting">Counting</div>
         <div class="card-name">Circular Permutations</div>
-        <div class="card-intuition">Arrange \(n\) distinct objects in a circle. Fix one to break rotational symmetry, then arrange the rest.</div>
-        <div class="formula-box teal">
-          $$(n - 1)!$$
-        </div>
+        <div class="card-intuition">Arrange \(n\) distinct objects in a circle. Fix one to break rotational symmetry.</div>
+        <div class="formula-box teal">$$(n - 1)!$$</div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">How many ways can 6 people sit around a round table?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \((6 - 1)! = 5!\)
-        </div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(5! = 120\)</div>
         <div class="example-answer">\(= 120\)</div>
       </div>
     </div>
@@ -524,10 +292,7 @@
   </div>
 </div>
 
-
-<!-- ╔═══════════════════════════════════════════╗ -->
-<!-- ║  SECTION 2 — PROBABILITY RULES            ║ -->
-<!-- ╚═══════════════════════════════════════════╝ -->
+<!-- ═══════════════ 02 — PROBABILITY RULES ═══════════════ -->
 <div class="section" id="probability">
   <div class="section-header">
     <span class="section-number">02</span>
@@ -539,19 +304,17 @@
       <div class="card-top">
         <div class="card-label label-probability">Probability</div>
         <div class="card-name">Classical Probability</div>
-        <div class="card-intuition">When all outcomes are equally likely, probability = favorable outcomes / total outcomes.</div>
+        <div class="card-intuition">When all outcomes are equally likely: favorable / total.</div>
         <div class="formula-box violet">
           $$P(A) = \frac{|A|}{|S|}$$
-          <div class="formula-note">\(S\) = sample space, \(A\) = event of interest</div>
+          <div class="formula-note">\(S\) = sample space, \(A\) = event</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Probability of rolling a sum of 7 with two fair dice?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(|S| = 36\). Favorable: \(\{(1,6),(2,5),(3,4),(4,3),(5,2),(6,1)\}\) → \(|A| = 6\)
-        </div>
-        <div class="example-answer">\(P = \dfrac{6}{36} = \dfrac{1}{6} \approx 0.167\)</div>
+        <div class="example-q">What is the probability of rolling a sum of 7 with two fair dice?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> 6 favorable out of 36</div>
+        <div class="example-answer">\(= 1/6 \approx 0.167\)</div>
       </div>
     </div>
 
@@ -559,19 +322,14 @@
       <div class="card-top">
         <div class="card-label label-probability">Probability</div>
         <div class="card-name">Complement Rule</div>
-        <div class="card-intuition">Sometimes it's easier to calculate what you <em>don't</em> want and subtract. "At least one" problems are almost always complement problems.</div>
-        <div class="formula-box violet">
-          $$P(A) = 1 - P(A^c)$$
-        </div>
+        <div class="card-intuition">Calculate what you <em>don't</em> want and subtract. "At least one" = complement.</div>
+        <div class="formula-box violet">$$P(A) = 1 - P(A^c)$$</div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Roll a die 4 times. \(P(\text{at least one 6})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">COMPLEMENT →</span> \(P(\text{no sixes}) = \left(\frac{5}{6}\right)^4 = \frac{625}{1296}\)<br>
-          <span class="step-label">ANSWER →</span> \(P(\geq 1 \text{ six}) = 1 - \frac{625}{1296}\)
-        </div>
-        <div class="example-answer">\(= \dfrac{671}{1296} \approx 0.518\)</div>
+        <div class="example-q">Roll a die 4 times. What is \(P(\text{at least one 6})\)?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(1 - (5/6)^4\)</div>
+        <div class="example-answer">\(= 671/1296 \approx 0.518\)</div>
       </div>
     </div>
 
@@ -579,20 +337,17 @@
       <div class="card-top">
         <div class="card-label label-probability">Probability</div>
         <div class="card-name">Addition Rule (OR)</div>
-        <div class="card-intuition">\(P(A \text{ or } B)\): add the individual probabilities, then subtract the overlap you double-counted.</div>
+        <div class="card-intuition">Add individual probabilities, subtract the double-counted overlap.</div>
         <div class="formula-box violet">
           $$P(A \cup B) = P(A) + P(B) - P(A \cap B)$$
-          <div class="formula-note">If mutually exclusive: \(P(A \cap B) = 0\), so just add.</div>
+          <div class="formula-note">Mutually exclusive: \(P(A \cap B) = 0\)</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Draw one card. \(P(\text{Heart or King})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(P(H) = \frac{13}{52},\; P(K) = \frac{4}{52},\; P(H \cap K) = \frac{1}{52}\)<br>
-          \(= \frac{13}{52} + \frac{4}{52} - \frac{1}{52}\)
-        </div>
-        <div class="example-answer">\(= \dfrac{16}{52} = \dfrac{4}{13} \approx 0.308\)</div>
+        <div class="example-q">Draw one card from a standard deck. What is \(P(\text{Heart or King})\)?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(13/52 + 4/52 - 1/52\)</div>
+        <div class="example-answer">\(= 4/13 \approx 0.308\)</div>
       </div>
     </div>
 
@@ -600,20 +355,17 @@
       <div class="card-top">
         <div class="card-label label-probability">Probability</div>
         <div class="card-name">Multiplication Rule (AND)</div>
-        <div class="card-intuition">\(P(A \text{ and } B)\): probability of A happening, times probability of B given A already happened.</div>
+        <div class="card-intuition">\(P(A \text{ and } B)\): probability of A times probability of B given A happened.</div>
         <div class="formula-box violet">
           $$P(A \cap B) = P(A) \cdot P(B \mid A)$$
-          <div class="formula-note">If independent: \(P(B \mid A) = P(B)\), so just multiply.</div>
+          <div class="formula-note">If independent: just multiply.</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Draw 2 cards without replacement. \(P(\text{both Aces})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(P(\text{1st Ace}) = \frac{4}{52},\quad P(\text{2nd Ace} \mid \text{1st Ace}) = \frac{3}{51}\)<br>
-          \(= \frac{4}{52} \times \frac{3}{51}\)
-        </div>
-        <div class="example-answer">\(= \dfrac{12}{2652} = \dfrac{1}{221} \approx 0.0045\)</div>
+        <div class="example-q">Draw 2 cards without replacement. What is \(P(\text{both Aces})\)?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \((4/52)(3/51)\)</div>
+        <div class="example-answer">\(= 1/221 \approx 0.0045\)</div>
       </div>
     </div>
 
@@ -621,22 +373,18 @@
       <div class="card-top">
         <div class="card-label label-probability">Probability</div>
         <div class="card-name">Independence</div>
-        <div class="card-intuition">Two events are independent if knowing one happened tells you nothing about the other.</div>
+        <div class="card-intuition">Knowing one event tells you nothing about the other.</div>
         <div class="formula-box violet">
           $$A, B \text{ independent} \iff P(A \cap B) = P(A) \cdot P(B)$$
-          <div class="formula-note">Equivalently: \(P(A \mid B) = P(A)\)</div>
         </div>
         <div class="tip-box">
-          <strong>Interview trap:</strong> Independent ≠ mutually exclusive. If A and B are mutually exclusive with \(P(A)>0, P(B)>0\), they <em>cannot</em> be independent because \(P(A \cap B) = 0 \neq P(A) \cdot P(B)\).
+          <strong>Trap:</strong> Independent ≠ mutually exclusive. If both have positive probability and are M.E., they can't be independent.
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">Flip a fair coin twice. Are "Heads on flip 1" and "Heads on flip 2" independent?</div>
-        <div class="example-steps">
-          <span class="step-label">CHECK →</span> \(P(H_1) = \frac{1}{2},\; P(H_2) = \frac{1}{2},\; P(H_1 \cap H_2) = \frac{1}{4}\)<br>
-          \(P(H_1) \cdot P(H_2) = \frac{1}{4} = P(H_1 \cap H_2)\;\checkmark\)
-        </div>
+        <div class="example-steps"><span class="step-label">CHECK →</span> \(P(H_1)P(H_2) = 1/4 = P(H_1 \cap H_2)\;\checkmark\)</div>
         <div class="example-answer">Yes, independent.</div>
       </div>
     </div>
@@ -645,18 +393,15 @@
       <div class="card-top">
         <div class="card-label label-probability">Probability</div>
         <div class="card-name">Inclusion-Exclusion (3 events)</div>
-        <div class="card-intuition">Generalized OR for 3+ events: add singles, subtract pairs, add back triples.</div>
+        <div class="card-intuition">Add singles, subtract pairs, add back triples.</div>
         <div class="formula-box violet">
           $$P(A \cup B \cup C) = \sum P - \sum P(\text{pairs}) + P(A \cap B \cap C)$$
-          <div class="formula-note" style="text-align:left;padding-left:10px;">\(= P(A)+P(B)+P(C) - P(A\cap B)-P(A\cap C)-P(B\cap C) + P(A\cap B\cap C)\)</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">In 100 students: 40 Math, 30 Physics, 20 CS. 14 M∩P, 10 M∩C, 8 P∩C, 5 all three. \(P(\text{at least one})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(\frac{40+30+20 - 14-10-8 + 5}{100} = \frac{63}{100}\)
-        </div>
+        <div class="example-q">In 100 students: 40 take Math, 30 take Physics, 20 take CS. 14 take M∩P, 10 take M∩C, 8 take P∩C, 5 take all three. \(P(\text{student takes at least one})\)?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \((40+30+20-14-10-8+5)/100\)</div>
         <div class="example-answer">\(= 0.63\)</div>
       </div>
     </div>
@@ -664,10 +409,7 @@
   </div>
 </div>
 
-
-<!-- ╔═══════════════════════════════════════════╗ -->
-<!-- ║  SECTION 3 — CONDITIONAL & BAYES          ║ -->
-<!-- ╚═══════════════════════════════════════════╝ -->
+<!-- ═══════════════ 03 — CONDITIONAL & BAYES ═══════════════ -->
 <div class="section" id="conditional">
   <div class="section-header">
     <span class="section-number">03</span>
@@ -679,19 +421,14 @@
       <div class="card-top">
         <div class="card-label label-probability">Probability</div>
         <div class="card-name">Conditional Probability</div>
-        <div class="card-intuition">The probability of A, given B has occurred. You "shrink" the sample space to only outcomes where B is true.</div>
-        <div class="formula-box violet">
-          $$P(A \mid B) = \frac{P(A \cap B)}{P(B)}$$
-        </div>
+        <div class="card-intuition">Shrink the sample space to only outcomes where B is true.</div>
+        <div class="formula-box violet">$$P(A \mid B) = \frac{P(A \cap B)}{P(B)}$$</div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Roll two dice. Given sum \(\geq 10\), what's \(P(\text{both dice} \geq 5)\)?</div>
-        <div class="example-steps">
-          <span class="step-label">S(sum≥10) →</span> \(\{(4,6),(5,5),(5,6),(6,4),(6,5),(6,6)\}\) → 6 outcomes<br>
-          <span class="step-label">A∩B →</span> Both ≥5 AND sum≥10: \(\{(5,5),(5,6),(6,5),(6,6)\}\) → 4
-        </div>
-        <div class="example-answer">\(P = \dfrac{4}{6} = \dfrac{2}{3}\)</div>
+        <div class="example-q">Roll two dice. Given the sum is \(\geq 10\), what is the probability both dice show 5 or more?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> 4 of 6 qualifying outcomes</div>
+        <div class="example-answer">\(= 2/3\)</div>
       </div>
     </div>
 
@@ -699,19 +436,15 @@
       <div class="card-top">
         <div class="card-label label-probability">Probability</div>
         <div class="card-name">Law of Total Probability</div>
-        <div class="card-intuition">Break a complex event into cases based on a partition. Compute \(P(A)\) by summing over each case, weighted by how likely that case is.</div>
+        <div class="card-intuition">Break into cases via a partition. Sum over each case weighted by its likelihood.</div>
         <div class="formula-box violet">
           $$P(A) = \sum_{i} P(A \mid B_i)\, P(B_i)$$
-          <div class="formula-note">where \(B_1, B_2, \ldots\) form a partition of \(S\)</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Machine A: 60% of output, 2% defect. Machine B: 40%, 5% defects. \(P(\text{defective})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(P(D) = P(D|A)\,P(A) + P(D|B)\,P(B)\)<br>
-          \(= 0.02 \times 0.60 + 0.05 \times 0.40 = 0.012 + 0.020\)
-        </div>
+        <div class="example-q">Factory has Machine A (60% of output, 2% defect rate) and Machine B (40%, 5% defects). What is \(P(\text{random item is defective})\)?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(0.02(0.6) + 0.05(0.4)\)</div>
         <div class="example-answer">\(= 0.032\) (3.2%)</div>
       </div>
     </div>
@@ -720,7 +453,7 @@
       <div class="card-top">
         <div class="card-label label-advanced">★ High-frequency</div>
         <div class="card-name">Bayes' Theorem</div>
-        <div class="card-intuition">Update your belief about a hypothesis after observing evidence. "Given I saw the data, how likely is each cause?" The single most important formula for quant interviews.</div>
+        <div class="card-intuition">Update belief about a hypothesis after evidence. The most important formula for quant interviews.</div>
         <div class="formula-box rose">
           $$P(B_j \mid A) = \frac{P(A \mid B_j)\, P(B_j)}{\displaystyle\sum_{i} P(A \mid B_i)\, P(B_i)}$$
           <div class="formula-note">\(\text{posterior} = \dfrac{\text{likelihood} \times \text{prior}}{\text{evidence}}\)</div>
@@ -728,26 +461,19 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Classic Interview Example</div>
-        <div class="example-q">A disease affects 1% of the population. A test is 95% accurate (sensitivity and specificity). If you test positive, what's \(P(\text{disease})\)?</div>
+        <div class="example-q">A disease affects 1% of the population. A test is 95% accurate (both sensitivity and specificity). If you test positive, what's \(P(\text{you have the disease})\)?</div>
         <div class="example-steps">
-          <span class="step-label">DEFINE →</span> \(P(D) = 0.01,\; P(+|D) = 0.95,\; P(+|D^c) = 0.05\)<br>
-          <span class="step-label">TOTAL →</span> \(P(+) = 0.95 \times 0.01 + 0.05 \times 0.99 = 0.0095 + 0.0495 = 0.059\)<br>
-          <span class="step-label">BAYES →</span> \(P(D|+) = \dfrac{0.0095}{0.059}\)
+          <span class="step-label">TOTAL →</span> \(P(+) = 0.95(0.01) + 0.05(0.99) = 0.059\)<br>
+          <span class="step-label">BAYES →</span> \(0.0095 / 0.059\)
         </div>
-        <div class="example-answer">\(\approx 0.161\) (only 16.1%!) — The base rate dominates.</div>
-        <div class="tip-box" style="margin:14px 0 0;">
-          <strong>Intuition:</strong> Even with a good test, when the disease is rare, most positives are false positives. Always anchor on the base rate first.
-        </div>
+        <div class="example-answer">\(\approx 0.161\) (16.1%) — base rate dominates</div>
       </div>
     </div>
 
   </div>
 </div>
 
-
-<!-- ╔═══════════════════════════════════════════╗ -->
-<!-- ║  SECTION 4 — E[X], Var(X)                 ║ -->
-<!-- ╚═══════════════════════════════════════════╝ -->
+<!-- ═══════════════ 04 — E[X], Var(X) ═══════════════ -->
 <div class="section" id="ev">
   <div class="section-header">
     <span class="section-number">04</span>
@@ -759,23 +485,18 @@
       <div class="card-top">
         <div class="card-label label-probability">Probability</div>
         <div class="card-name">Expected Value \(E[X]\)</div>
-        <div class="card-intuition">The long-run average if you repeated the experiment infinitely. A probability-weighted sum of all outcomes.</div>
-        <div class="formula-box violet">
-          $$E[X] = \sum_{i} x_i \cdot P(X = x_i)$$
-        </div>
+        <div class="card-intuition">The long-run average — a probability-weighted sum of all outcomes.</div>
+        <div class="formula-box violet">$$E[X] = \sum_{i} x_i \cdot P(X = x_i)$$</div>
         <div class="formula-box blue" style="margin-top:10px;">
           $$E[aX + bY] = a\,E[X] + b\,E[Y]$$
-          <div class="formula-note">Linearity of expectation — always holds, even if \(X, Y\) are dependent!</div>
+          <div class="formula-note">Linearity — always holds, even if dependent!</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">You pay $5 to roll a die. You win $ equal to the face value. Expected profit?</div>
-        <div class="example-steps">
-          <span class="step-label">E[ROLL] →</span> \(\frac{1+2+3+4+5+6}{6} = 3.5\)<br>
-          <span class="step-label">E[PROFIT] →</span> \(3.5 - 5\)
-        </div>
-        <div class="example-answer">\(= -\$1.50\) (don't play this game)</div>
+        <div class="example-q">You pay $5 to roll a die. You win $ equal to the face value. What is your expected profit?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(E[\text{roll}] = 3.5\), profit \(= 3.5 - 5\)</div>
+        <div class="example-answer">\(= -\$1.50\)</div>
       </div>
     </div>
 
@@ -783,25 +504,128 @@
       <div class="card-top">
         <div class="card-label label-probability">Probability</div>
         <div class="card-name">Variance &amp; Standard Deviation</div>
-        <div class="card-intuition">Variance measures spread: how far outcomes deviate from the mean on average (squared). SD is the same thing in the original units.</div>
+        <div class="card-intuition">Measures spread: average squared deviation from the mean.</div>
         <div class="formula-box violet">
           $$\text{Var}(X) = E[X^2] - \big(E[X]\big)^2$$
           <div class="formula-note">\(\sigma = \sqrt{\text{Var}(X)}\)</div>
         </div>
         <div class="formula-box blue" style="margin-top:10px;">
-          $$\text{Var}(aX + b) = a^2 \,\text{Var}(X)$$
-          <div class="formula-note">If independent: \(\text{Var}(X + Y) = \text{Var}(X) + \text{Var}(Y)\)</div>
+          $$\text{Var}(aX + b) = a^2\,\text{Var}(X)$$
+          <div class="formula-note">If independent: \(\text{Var}(X+Y) = \text{Var}(X) + \text{Var}(Y)\)</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">\(X \sim\) fair die. Find \(\text{Var}(X)\).</div>
-        <div class="example-steps">
-          <span class="step-label">E[X] →</span> \(3.5\)<br>
-          <span class="step-label">E[X²] →</span> \(\frac{1+4+9+16+25+36}{6} = \frac{91}{6}\)<br>
-          <span class="step-label">Var →</span> \(\frac{91}{6} - (3.5)^2 = \frac{91}{6} - \frac{49}{4}\)
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(E[X^2] = 91/6\), so \(91/6 - 3.5^2\)</div>
+        <div class="example-answer">\(= 35/12 \approx 2.917\)</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ 05 — JOINT, COVARIANCE, CORRELATION ═══════════════ -->
+<div class="section" id="joint">
+  <div class="section-header">
+    <span class="section-number">05</span>
+    <h2 class="section-title">Joint Distributions, Covariance &amp; Correlation</h2>
+  </div>
+  <div class="card-grid">
+
+    <!-- Joint Distribution -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-fundamental">Fundamental</div>
+        <div class="card-name">Joint &amp; Marginal Distributions</div>
+        <div class="card-intuition">A joint distribution describes the probability of two (or more) random variables simultaneously. Marginals recover individual distributions by summing/integrating out the other variable.</div>
+        <div class="formula-box blue">
+          $$P(X = x,\, Y = y) = p_{X,Y}(x,y)$$
         </div>
-        <div class="example-answer">\(= \dfrac{35}{12} \approx 2.917\)</div>
+        <div class="dual-formula">
+          <div class="formula-box blue" style="margin-bottom:0;">
+            <div class="formula-note" style="margin:0 0 6px;font-style:normal;color:var(--accent-teal);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;">MARGINAL (DISCRETE)</div>
+            $$P(X = x) = \sum_{y} P(X=x,\, Y=y)$$
+          </div>
+          <div class="formula-box blue" style="margin-bottom:0;">
+            <div class="formula-note" style="margin:0 0 6px;font-style:normal;color:var(--accent-teal);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;">MARGINAL (CONTINUOUS)</div>
+            $$f_X(x) = \int_{-\infty}^{\infty} f_{X,Y}(x,y)\, dy$$
+          </div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Roll two dice \(X\) and \(Y\). What is \(P(X = 1)\)?</div>
+        <div class="example-steps"><span class="step-label">MARGINALIZE →</span> \(\sum_{y=1}^{6} P(X=1,Y=y) = 6 \times \frac{1}{36}\)</div>
+        <div class="example-answer">\(= 1/6\)</div>
+      </div>
+    </div>
+
+    <!-- Covariance -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-fundamental">Fundamental</div>
+        <div class="card-name">Covariance</div>
+        <div class="card-intuition">Measures how two variables move together. Positive = same direction, negative = opposite, zero = no linear relationship.</div>
+        <div class="formula-box blue">
+          $$\text{Cov}(X,Y) = E[XY] - E[X]\,E[Y]$$
+          <div class="formula-note">Equivalently: \(\text{Cov}(X,Y) = E\big[(X - \mu_X)(Y - \mu_Y)\big]\)</div>
+        </div>
+        <div class="formula-box blue" style="margin-top:10px;">
+          $$\text{Var}(X + Y) = \text{Var}(X) + \text{Var}(Y) + 2\,\text{Cov}(X,Y)$$
+          <div class="formula-note">\(\text{Cov}(aX, bY) = ab\,\text{Cov}(X,Y)\)</div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">If \(X\) and \(Y\) are independent, what is \(\text{Cov}(X,Y)\)?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(E[XY] = E[X]E[Y]\) when independent</div>
+        <div class="example-answer">\(\text{Cov} = 0\) (but \(\text{Cov}=0 \not\Rightarrow\) independent!)</div>
+      </div>
+    </div>
+
+    <!-- Correlation -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-fundamental">Fundamental</div>
+        <div class="card-name">Correlation Coefficient</div>
+        <div class="card-intuition">Normalized covariance — always between \(-1\) and \(+1\). Scale-free measure of linear association.</div>
+        <div class="formula-box blue">
+          $$\rho_{X,Y} = \frac{\text{Cov}(X,Y)}{\sigma_X \,\sigma_Y}$$
+          <div class="formula-note">\(-1 \leq \rho \leq 1\). \(|\rho| = 1\) iff \(Y = aX + b\) (perfectly linear)</div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Given \(\text{Cov}(X,Y) = 6\), \(\sigma_X = 3\), \(\sigma_Y = 4\). What is the correlation \(\rho\)?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\rho = 6/(3 \times 4)\)</div>
+        <div class="example-answer">\(= 0.5\)</div>
+      </div>
+    </div>
+
+    <!-- MGF -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-advanced">★ Key technique</div>
+        <div class="card-name">Moment Generating Function (MGF)</div>
+        <div class="card-intuition">A transform that encodes <em>all</em> moments of a distribution. If two RVs have the same MGF, they have the same distribution. Derivatives at \(t=0\) give moments.</div>
+        <div class="formula-box rose">
+          $$M_X(t) = E[e^{tX}]$$
+          <div class="formula-note">\(M_X^{(n)}(0) = E[X^n]\) — the \(n\)-th moment</div>
+        </div>
+        <div class="tip-box">
+          <strong>Key MGFs to know:</strong> Bernoulli: \(1-p+pe^t\). Binomial: \((1-p+pe^t)^n\). Poisson: \(e^{\lambda(e^t - 1)}\). Normal: \(e^{\mu t + \sigma^2 t^2/2}\). Exponential: \(\frac{\lambda}{\lambda - t}\) for \(t < \lambda\).
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Use the MGF to find \(E[X]\) for \(X \sim \text{Poisson}(\lambda)\).</div>
+        <div class="example-steps">
+          <span class="step-label">MGF →</span> \(M(t) = e^{\lambda(e^t-1)}\)<br>
+          <span class="step-label">DERIVE →</span> \(M'(t) = \lambda e^t \cdot e^{\lambda(e^t-1)}\)<br>
+          <span class="step-label">EVALUATE →</span> \(M'(0) = \lambda \cdot 1 \cdot e^0\)
+        </div>
+        <div class="example-answer">\(E[X] = \lambda\)</div>
       </div>
     </div>
 
@@ -809,179 +633,404 @@
 </div>
 
 
-<!-- ╔═══════════════════════════════════════════╗ -->
-<!-- ║  SECTION 5 — DISTRIBUTIONS                ║ -->
-<!-- ╚═══════════════════════════════════════════╝ -->
+<!-- ═══════════════ 06 — DISTRIBUTIONS ═══════════════ -->
 <div class="section" id="distributions">
   <div class="section-header">
-    <span class="section-number">05</span>
+    <span class="section-number">06</span>
     <h2 class="section-title">Key Distributions</h2>
   </div>
   <div class="card-grid">
 
+    <!-- PDF / PMF / CDF Definition -->
+    <div class="card card-wide">
+      <div class="card-top">
+        <div class="card-label label-fundamental">Fundamental</div>
+        <div class="card-name">PMF, PDF &amp; CDF</div>
+        <div class="card-intuition">Three ways to describe a distribution. The PMF/PDF tells you the probability (or density) at each point. The CDF accumulates probability up to a point. Together they fully characterize any random variable.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+          <div class="formula-box amber" style="margin-bottom:0;">
+            <div class="formula-note" style="margin:0 0 6px;font-style:normal;color:var(--accent-teal);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;">PMF (DISCRETE)</div>
+            $$p(x) = P(X = x)$$
+            <div class="formula-note">\(\sum_x p(x) = 1\)</div>
+          </div>
+          <div class="formula-box amber" style="margin-bottom:0;">
+            <div class="formula-note" style="margin:0 0 6px;font-style:normal;color:var(--accent-teal);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;">PDF (CONTINUOUS)</div>
+            $$P(a \leq X \leq b) = \int_a^b f(x)\,dx$$
+            <div class="formula-note">\(f(x) \geq 0\), \(\int f(x)\,dx = 1\)</div>
+          </div>
+          <div class="formula-box amber" style="margin-bottom:0;">
+            <div class="formula-note" style="margin:0 0 6px;font-style:normal;color:var(--accent-teal);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;">CDF (BOTH)</div>
+            $$F(x) = P(X \leq x)$$
+            <div class="formula-note">\(f(x) = F'(x)\) for continuous</div>
+          </div>
+        </div>
+        <div class="tip-box" style="margin-top:16px;">
+          <strong>Key properties of CDF:</strong> \(F(-\infty) = 0\), \(F(\infty) = 1\), non-decreasing, right-continuous. And \(P(a < X \leq b) = F(b) - F(a)\).
+        </div>
+      </div>
+    </div>
+
+    <!-- Binomial -->
     <div class="card">
       <div class="card-top">
         <div class="card-label label-distribution">Distribution</div>
         <div class="card-name">Binomial</div>
-        <div class="card-intuition">Number of successes in \(n\) independent trials, each with success probability \(p\).</div>
+        <div class="card-intuition"># successes in \(n\) independent trials with success prob \(p\).</div>
         <div class="formula-box amber">
-          $$P(X = k) = \binom{n}{k}\, p^k\, (1-p)^{n-k}$$
-          <div class="formula-note">\(E[X] = np \qquad \text{Var}(X) = np(1-p)\)</div>
+          $$P(X = k) = \binom{n}{k}\, p^k (1-p)^{n-k}$$
+          <div class="formula-note">\(E = np \quad \text{Var} = np(1-p)\)</div>
+        </div>
+        <div class="cdf-box">
+          <div class="cdf-label">CDF</div>
+          $$F(k) = \sum_{i=0}^{\lfloor k \rfloor} \binom{n}{i}\, p^i (1-p)^{n-i}$$
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Flip a fair coin 10 times. \(P(\text{exactly 7 heads})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(\dbinom{10}{7}\,(0.5)^7\,(0.5)^3 = 120 \cdot \frac{1}{1024}\)
-        </div>
-        <div class="example-answer">\(= \dfrac{120}{1024} \approx 0.117\)</div>
+        <div class="example-q">Flip a fair coin 10 times. What is \(P(\text{exactly 7 heads})\)?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\binom{10}{7}(0.5)^{10} = 120/1024\)</div>
+        <div class="example-answer">\(\approx 0.117\)</div>
       </div>
     </div>
 
+    <!-- Geometric -->
     <div class="card">
       <div class="card-top">
         <div class="card-label label-distribution">Distribution</div>
         <div class="card-name">Geometric</div>
-        <div class="card-intuition">Number of trials until the <em>first</em> success. Memoryless: past failures don't change future odds.</div>
+        <div class="card-intuition"># trials until 1st success. <strong>Memoryless</strong>.</div>
         <div class="formula-box amber">
-          $$P(X = k) = (1-p)^{k-1}\, p$$
-          <div class="formula-note">\(E[X] = \dfrac{1}{p} \qquad \text{Var}(X) = \dfrac{1-p}{p^2}\)</div>
+          $$P(X = k) = (1-p)^{k-1} p$$
+          <div class="formula-note">\(E = 1/p \quad \text{Var} = (1-p)/p^2\)</div>
+        </div>
+        <div class="cdf-box">
+          <div class="cdf-label">CDF</div>
+          $$F(k) = 1 - (1-p)^{k}$$
+          <div class="formula-note">Survival: \(P(X > k) = (1-p)^k\)</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Roll a die until you get a 6. Expected number of rolls?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(p = \frac{1}{6} \;\Rightarrow\; E[X] = \frac{1}{p}\)
-        </div>
-        <div class="example-answer">\(= 6\) rolls</div>
+        <div class="example-q">Roll a die until you get a 6. What is the expected number of rolls? What is \(P(\text{success within 3 tries})\)?</div>
+        <div class="example-steps"><span class="step-label">E →</span> \(6\). <span class="step-label">CDF →</span> \(1 - (5/6)^3\)</div>
+        <div class="example-answer">\(E=6\); \(F(3) \approx 0.421\)</div>
       </div>
     </div>
 
+    <!-- Negative Binomial -->
     <div class="card">
       <div class="card-top">
         <div class="card-label label-distribution">Distribution</div>
         <div class="card-name">Negative Binomial</div>
-        <div class="card-intuition">Number of trials until the \(r\)-th success. Generalizes the Geometric (\(r=1\)).</div>
+        <div class="card-intuition"># trials until \(r\)-th success. Generalizes Geometric.</div>
         <div class="formula-box amber">
-          $$P(X = k) = \binom{k-1}{r-1}\, p^r\, (1-p)^{k-r}$$
-          <div class="formula-note">\(E[X] = \dfrac{r}{p} \qquad \text{Var}(X) = \dfrac{r(1-p)}{p^2}\)</div>
+          $$P(X = k) = \binom{k-1}{r-1} p^r (1-p)^{k-r}$$
+          <div class="formula-note">\(E = r/p \quad \text{Var} = r(1-p)/p^2\)</div>
+        </div>
+        <div class="cdf-box">
+          <div class="cdf-label">CDF</div>
+          $$F(k) = \sum_{i=r}^{k} \binom{i-1}{r-1} p^r (1-p)^{i-r}$$
+          <div class="formula-note">Also: \(I_p(r,\, k-r+1)\) via regularized incomplete beta</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Flip coins (\(p=0.5\)) until 3 heads. \(P(\text{takes exactly 5 flips})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(r=3,\; k=5:\; \dbinom{4}{2}\,(0.5)^3\,(0.5)^2 = 6 \cdot \frac{1}{32}\)
-        </div>
-        <div class="example-answer">\(= \dfrac{6}{32} = \dfrac{3}{16} \approx 0.1875\)</div>
+        <div class="example-q">Flip coins (\(p = 0.5\)) until you get 3 heads. What is \(P(\text{it takes exactly 5 flips})\)?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\binom{4}{2}(0.5)^5 = 6/32\)</div>
+        <div class="example-answer">\(= 3/16 \approx 0.188\)</div>
       </div>
     </div>
 
+    <!-- Poisson -->
     <div class="card">
       <div class="card-top">
         <div class="card-label label-distribution">Distribution</div>
         <div class="card-name">Poisson</div>
-        <div class="card-intuition">Counts rare events in a fixed interval. The limit of Binomial when \(n \to \infty\), \(p \to 0\), and \(np = \lambda\) stays constant.</div>
+        <div class="card-intuition">Rare events in a fixed interval. Limit of Binomial as \(n \to \infty\), \(p \to 0\), \(np = \lambda\).</div>
         <div class="formula-box amber">
-          $$P(X = k) = \frac{e^{-\lambda}\, \lambda^k}{k!}$$
-          <div class="formula-note">\(E[X] = \lambda \qquad \text{Var}(X) = \lambda\)</div>
+          $$P(X = k) = \frac{e^{-\lambda} \lambda^k}{k!}$$
+          <div class="formula-note">\(E = \lambda \quad \text{Var} = \lambda\)</div>
+        </div>
+        <div class="cdf-box">
+          <div class="cdf-label">CDF</div>
+          $$F(k) = e^{-\lambda} \sum_{i=0}^{\lfloor k \rfloor} \frac{\lambda^i}{i!}$$
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">A server gets 3 requests/min on average. \(P(\text{exactly 5 in a minute})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(\lambda=3,\; k=5:\; \frac{e^{-3} \cdot 3^5}{5!} = \frac{0.0498 \times 243}{120}\)
-        </div>
-        <div class="example-answer">\(\approx 0.1008\)</div>
+        <div class="example-q">A server gets 3 requests per minute on average. What is \(P(\text{at most 2 in a given minute})\)?</div>
+        <div class="example-steps"><span class="step-label">CDF →</span> \(e^{-3}(1 + 3 + 4.5)\)</div>
+        <div class="example-answer">\(\approx 0.423\)</div>
       </div>
     </div>
 
+    <!-- Hypergeometric -->
     <div class="card">
       <div class="card-top">
         <div class="card-label label-distribution">Distribution</div>
         <div class="card-name">Hypergeometric</div>
-        <div class="card-intuition">Drawing <em>without replacement</em> from a finite population. Like Binomial but trials aren't independent.</div>
+        <div class="card-intuition">Sampling <em>without replacement</em> from finite population.</div>
         <div class="formula-box amber">
-          $$P(X = k) = \frac{\dbinom{K}{k}\,\dbinom{N-K}{n-k}}{\dbinom{N}{n}}$$
-          <div class="formula-note">\(N\) = population, \(K\) = successes in pop, \(n\) = draws</div>
+          $$P(X = k) = \frac{\binom{K}{k}\binom{N-K}{n-k}}{\binom{N}{n}}$$
+          <div class="formula-note">\(N\) = pop, \(K\) = successes, \(n\) = draws</div>
+        </div>
+        <div class="cdf-box">
+          <div class="cdf-label">CDF</div>
+          $$F(k) = \sum_{i=0}^{k} \frac{\binom{K}{i}\binom{N-K}{n-i}}{\binom{N}{n}}$$
+          <div class="formula-note">No closed form — direct summation</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">52-card deck, 13 hearts. Draw 5 cards. \(P(\text{exactly 3 hearts})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(\dfrac{\binom{13}{3}\,\binom{39}{2}}{\binom{52}{5}} = \dfrac{286 \times 741}{2{,}598{,}960}\)
-        </div>
+        <div class="example-q">A deck of 52 cards has 13 hearts. You draw 5 cards. What is \(P(\text{exactly 3 hearts})\)?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\binom{13}{3}\binom{39}{2}/\binom{52}{5}\)</div>
         <div class="example-answer">\(\approx 0.0815\)</div>
       </div>
     </div>
 
+    <!-- Normal -->
     <div class="card">
       <div class="card-top">
         <div class="card-label label-distribution">Distribution</div>
         <div class="card-name">Normal (Gaussian)</div>
-        <div class="card-intuition">The bell curve. Arises naturally via CLT. Symmetric around \(\mu\). Know the 68-95-99.7 rule cold.</div>
+        <div class="card-intuition">The bell curve. Arises via CLT. Symmetric around \(\mu\).</div>
         <div class="formula-box amber">
-          $$f(x) = \frac{1}{\sqrt{2\pi\sigma^2}}\, \exp\!\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)$$
-          <div class="formula-note">Standardize: \(Z = \dfrac{X - \mu}{\sigma}\)</div>
+          $$f(x) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$$
+          <div class="formula-note">\(Z = (X-\mu)/\sigma\) to standardize</div>
         </div>
-        <div class="tip-box">
-          <strong>68-95-99.7 Rule:</strong> \(\pm 1\sigma\) captures 68.3%, \(\pm 2\sigma\) captures 95.4%, \(\pm 3\sigma\) captures 99.7%.
+        <div class="cdf-box">
+          <div class="cdf-label">CDF</div>
+          $$\Phi(z) = \frac{1}{2}\!\left[1 + \text{erf}\!\left(\frac{z}{\sqrt{2}}\right)\right]$$
+          <div class="formula-note">\(\Phi(1) \approx 0.841\), \(\Phi(2) \approx 0.977\), \(\Phi(3) \approx 0.999\)</div>
+        </div>
+        <div class="tip-box"><strong>68-95-99.7:</strong> \(\pm1\sigma\) → 68.3%, \(\pm2\sigma\) → 95.4%, \(\pm3\sigma\) → 99.7%.</div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Heights are distributed as \(N(170, 10^2)\) cm. What is \(P(\text{height} \leq 185)\)?</div>
+        <div class="example-steps"><span class="step-label">Z →</span> \(1.5\) → <span class="step-label">CDF →</span> \(\Phi(1.5)\)</div>
+        <div class="example-answer">\(\approx 0.933\)</div>
+      </div>
+    </div>
+
+    <!-- Φ and φ Notation -->
+    <div class="card card-wide">
+      <div class="card-top">
+        <div class="card-label label-fundamental">Notation</div>
+        <div class="card-name">Standard Normal: \(\Phi(z)\) and \(\varphi(z)\)</div>
+        <div class="card-intuition">Two notations you must know cold for the standard normal \(Z \sim N(0,1)\). Capital \(\Phi\) is the CDF (cumulative area to the left). Lowercase \(\varphi\) is the PDF (the bell curve height). Every normal probability ultimately reduces to these.</div>
+        <div class="dual-formula">
+          <div class="formula-box amber" style="margin-bottom:0;">
+            <div class="formula-note" style="margin:0 0 6px;font-style:normal;color:var(--accent-teal);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;">UPPERCASE Φ — THE CDF</div>
+            $$\Phi(z) = P(Z \leq z) = \int_{-\infty}^{z} \varphi(t)\, dt$$
+            <div class="formula-note">The area under the bell curve to the left of \(z\)</div>
+          </div>
+          <div class="formula-box amber" style="margin-bottom:0;">
+            <div class="formula-note" style="margin:0 0 6px;font-style:normal;color:var(--accent-teal);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;">LOWERCASE φ — THE PDF</div>
+            $$\varphi(z) = \frac{1}{\sqrt{2\pi}}\, e^{-z^2/2}$$
+            <div class="formula-note">The height of the bell curve at \(z\). Note: \(\varphi(z) = \Phi'(z)\)</div>
+          </div>
+        </div>
+        <div class="formula-box blue" style="margin-top:16px;text-align:left;padding-left:24px;">
+          <div class="formula-note" style="margin:0 0 8px;font-style:normal;color:var(--accent-teal);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;">KEY IDENTITIES &amp; COMMON LOOKUPS</div>
+          <div style="line-height:2.4;">
+            <strong style="color:var(--accent-blue);font-size:12px;">Symmetry:</strong> \(\quad\Phi(-z) = 1 - \Phi(z)\)<br>
+            <strong style="color:var(--accent-blue);font-size:12px;">Right tail:</strong> \(\quad P(Z > z) = 1 - \Phi(z)\)<br>
+            <strong style="color:var(--accent-blue);font-size:12px;">Interval:</strong> \(\quad P(a < Z \leq b) = \Phi(b) - \Phi(a)\)<br>
+            <strong style="color:var(--accent-blue);font-size:12px;">Symmetric interval:</strong> \(\quad P(|Z| \leq z) = 2\Phi(z) - 1\)<br>
+            <strong style="color:var(--accent-blue);font-size:12px;">General normal:</strong> \(\quad P(X \leq x) = \Phi\!\left(\dfrac{x - \mu}{\sigma}\right)\) for \(X \sim N(\mu, \sigma^2)\)<br>
+            <strong style="color:var(--accent-blue);font-size:12px;">PDF symmetry:</strong> \(\quad\varphi(-z) = \varphi(z)\) (even function)
+          </div>
+        </div>
+        <div class="tip-box" style="margin-top:16px;">
+          <strong>Key \(\Phi\) values to memorize:</strong> \(\Phi(0) = 0.5\), \(\Phi(0.675) \approx 0.75\), \(\Phi(1) \approx 0.8413\), \(\Phi(1.28) \approx 0.90\), \(\Phi(1.645) \approx 0.95\), \(\Phi(1.96) \approx 0.975\), \(\Phi(2) \approx 0.9772\), \(\Phi(2.33) \approx 0.99\), \(\Phi(2.576) \approx 0.995\), \(\Phi(3) \approx 0.9987\).
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Heights \(\sim N(170,\, 10^2)\) cm. \(P(\text{height} > 190)\)?</div>
+        <div class="example-q">Let \(X \sim N(50, 8^2)\). Find \(P(34 < X \leq 62)\) using \(\Phi\) notation.</div>
         <div class="example-steps">
-          <span class="step-label">STANDARDIZE →</span> \(Z = \frac{190 - 170}{10} = 2\)<br>
-          <span class="step-label">LOOKUP →</span> \(P(Z > 2) \approx 1 - 0.9772\)
+          <span class="step-label">STANDARDIZE →</span> \(Z_1 = \frac{34 - 50}{8} = -2\), \(\quad Z_2 = \frac{62 - 50}{8} = 1.5\)<br>
+          <span class="step-label">INTERVAL →</span> \(P(34 < X \leq 62) = \Phi(1.5) - \Phi(-2)\)<br>
+          <span class="step-label">SYMMETRY →</span> \(\Phi(-2) = 1 - \Phi(2) = 1 - 0.9772 = 0.0228\)<br>
+          <span class="step-label">COMPUTE →</span> \(0.9332 - 0.0228\)
         </div>
-        <div class="example-answer">\(\approx 0.0228\) (2.28%)</div>
+        <div class="example-answer">\(= 0.9104\) (91.04%)</div>
       </div>
     </div>
 
+    <!-- Uniform -->
     <div class="card">
       <div class="card-top">
         <div class="card-label label-distribution">Distribution</div>
         <div class="card-name">Uniform (Continuous)</div>
-        <div class="card-intuition">All values in \([a, b]\) are equally likely. The "I have no idea" distribution.</div>
+        <div class="card-intuition">All values in \([a,b]\) equally likely.</div>
         <div class="formula-box amber">
-          $$f(x) = \frac{1}{b - a} \quad \text{for } x \in [a,\, b]$$
-          <div class="formula-note">\(E[X] = \dfrac{a+b}{2} \qquad \text{Var}(X) = \dfrac{(b-a)^2}{12}\)</div>
+          $$f(x) = \frac{1}{b-a} \quad x \in [a,b]$$
+          <div class="formula-note">\(E = (a+b)/2 \quad \text{Var} = (b-a)^2/12\)</div>
+        </div>
+        <div class="cdf-box">
+          <div class="cdf-label">CDF</div>
+          $$F(x) = \begin{cases} 0 & x < a \\ \dfrac{x-a}{b-a} & a \leq x \leq b \\ 1 & x > b \end{cases}$$
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">A bus comes every 15 min. You arrive at a random time. \(E[\text{wait}]\)?</div>
-        <div class="example-steps">
-          <span class="step-label">MODEL →</span> Wait \(\sim \text{Uniform}(0, 15)\)<br>
-          <span class="step-label">SOLVE →</span> \(E[X] = \frac{0 + 15}{2}\)
-        </div>
-        <div class="example-answer">\(= 7.5\) minutes</div>
+        <div class="example-q">A bus comes every 15 minutes. You arrive at a random time. What is \(P(\text{wait} \leq 5 \text{ min})\)?</div>
+        <div class="example-steps"><span class="step-label">CDF →</span> \((5-0)/(15-0)\)</div>
+        <div class="example-answer">\(= 1/3 \approx 0.333\)</div>
       </div>
     </div>
 
+    <!-- Exponential -->
     <div class="card">
       <div class="card-top">
         <div class="card-label label-distribution">Distribution</div>
         <div class="card-name">Exponential</div>
-        <div class="card-intuition">Time between Poisson events. The continuous analog of Geometric — it's memoryless.</div>
+        <div class="card-intuition">Time between Poisson events. Continuous analog of Geometric — <strong>memoryless</strong>.</div>
         <div class="formula-box amber">
-          $$f(x) = \lambda\, e^{-\lambda x} \quad \text{for } x \geq 0$$
-          <div class="formula-note">\(E[X] = \dfrac{1}{\lambda} \qquad \text{Var}(X) = \dfrac{1}{\lambda^2} \qquad P(X > t) = e^{-\lambda t}\)</div>
+          $$f(x) = \lambda e^{-\lambda x} \quad x \geq 0$$
+          <div class="formula-note">\(E = 1/\lambda \quad \text{Var} = 1/\lambda^2\)</div>
+        </div>
+        <div class="cdf-box">
+          <div class="cdf-label">CDF</div>
+          $$F(x) = 1 - e^{-\lambda x} \quad x \geq 0$$
+          <div class="formula-note">Memoryless: \(P(X > s+t \mid X > s) = P(X > t)\)</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Calls arrive at rate \(\lambda = 2\)/hr. \(P(\text{wait} > 45\text{ min})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">CONVERT →</span> \(t = 45\text{ min} = 0.75\text{ hr}\)<br>
-          <span class="step-label">SOLVE →</span> \(P(X > 0.75) = e^{-2 \times 0.75} = e^{-1.5}\)
+        <div class="example-q">Calls arrive at rate \(\lambda = 2\) per hour. What is \(P(\text{wait for next call} \leq 30 \text{ min})\)?</div>
+        <div class="example-steps"><span class="step-label">CDF →</span> \(1 - e^{-2(0.5)} = 1 - e^{-1}\)</div>
+        <div class="example-answer">\(\approx 0.632\)</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ 07 — LIMIT THEOREMS ═══════════════ -->
+<div class="section" id="limit">
+  <div class="section-header">
+    <span class="section-number">07</span>
+    <h2 class="section-title">Limit Theorems &amp; Inequalities</h2>
+  </div>
+  <div class="card-grid">
+
+    <!-- CLT -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-advanced">★ Essential</div>
+        <div class="card-name">Central Limit Theorem (CLT)</div>
+        <div class="card-intuition">The average of many independent RVs is approximately Normal, regardless of the underlying distribution. The reason the Normal is everywhere.</div>
+        <div class="formula-box rose">
+          $$\frac{\bar{X}_n - \mu}{\sigma / \sqrt{n}} \xrightarrow{d} N(0, 1) \quad \text{as } n \to \infty$$
+          <div class="formula-note">\(\bar{X}_n = \frac{1}{n}\sum X_i\), where \(X_i\) iid with mean \(\mu\), variance \(\sigma^2\)</div>
         </div>
-        <div class="example-answer">\(\approx 0.223\)</div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">You roll a fair die 100 times. What is \(P(\text{sample average} > 3.7)\)?</div>
+        <div class="example-steps">
+          <span class="step-label">PARAMS →</span> \(\mu = 3.5\), \(\sigma^2 = 35/12\), \(n=100\)<br>
+          <span class="step-label">CLT →</span> \(Z = \frac{3.7-3.5}{\sqrt{35/12}/10} = \frac{0.2}{0.1708} \approx 1.17\)<br>
+          <span class="step-label">LOOKUP →</span> \(P(Z > 1.17) \approx 1 - 0.879\)
+        </div>
+        <div class="example-answer">\(\approx 0.121\)</div>
+      </div>
+    </div>
+
+    <!-- LLN -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-advanced">★ Essential</div>
+        <div class="card-name">Law of Large Numbers (LLN)</div>
+        <div class="card-intuition">The sample average converges to the true mean as sample size grows. The theoretical basis for Monte Carlo simulation.</div>
+        <div class="formula-box rose">
+          $$\bar{X}_n = \frac{1}{n}\sum_{i=1}^{n} X_i \xrightarrow{p} \mu \quad \text{as } n \to \infty$$
+          <div class="formula-note">Weak LLN: convergence in probability. Strong LLN: almost sure convergence.</div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Flip a fair coin 1,000,000 times. What does the proportion of Heads approach?</div>
+        <div class="example-steps"><span class="step-label">LLN →</span> \(\bar{X}_n \to E[X] = 0.5\)</div>
+        <div class="example-answer">\(\to 0.5\) (with probability 1)</div>
+      </div>
+    </div>
+
+    <!-- Markov -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-identity">Inequality</div>
+        <div class="card-name">Markov's Inequality</div>
+        <div class="card-intuition">The loosest but most general bound. Only requires \(X \geq 0\) — no variance needed.</div>
+        <div class="formula-box green">
+          $$P(X \geq a) \leq \frac{E[X]}{a} \quad \text{for } a > 0,\; X \geq 0$$
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">\(X \geq 0\) with \(E[X] = 10\). What is an upper bound on \(P(X \geq 50)\)?</div>
+        <div class="example-steps"><span class="step-label">MARKOV →</span> \(P(X \geq 50) \leq 10/50\)</div>
+        <div class="example-answer">\(\leq 0.2\)</div>
+      </div>
+    </div>
+
+    <!-- Chebyshev -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-identity">Inequality</div>
+        <div class="card-name">Chebyshev's Inequality</div>
+        <div class="card-intuition">Tighter than Markov — uses variance. Bounds how far \(X\) can be from its mean in terms of standard deviations.</div>
+        <div class="formula-box green">
+          $$P(|X - \mu| \geq k\sigma) \leq \frac{1}{k^2}$$
+          <div class="formula-note">Equivalently: \(P(|X - \mu| \geq a) \leq \text{Var}(X)/a^2\)</div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">\(X\) has mean \(\mu = 100\) and standard deviation \(\sigma = 15\). What is an upper bound on \(P(|X - 100| \geq 45)\)?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(k = 45/15 = 3\) → \(P \leq 1/9\)</div>
+        <div class="example-answer">\(\leq 1/9 \approx 0.111\)</div>
+      </div>
+    </div>
+
+    <!-- Jensen's -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-identity">Inequality</div>
+        <div class="card-name">Jensen's Inequality</div>
+        <div class="card-intuition">For a convex function, the function of the mean is ≤ the mean of the function. Appears constantly in finance (pricing, risk).</div>
+        <div class="formula-box green">
+          $$\text{If } g \text{ convex: } \quad g\big(E[X]\big) \leq E\big[g(X)\big]$$
+          <div class="formula-note">If \(g\) concave: inequality flips. Equality iff \(X\) is constant.</div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Show \(E[X^2] \geq (E[X])^2\).</div>
+        <div class="example-steps"><span class="step-label">JENSEN →</span> \(g(x) = x^2\) is convex, so \(g(E[X]) \leq E[g(X)]\)</div>
+        <div class="example-answer">\((E[X])^2 \leq E[X^2]\) → This proves \(\text{Var}(X) \geq 0\)!</div>
+      </div>
+    </div>
+
+    <!-- Cauchy-Schwarz -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-identity">Inequality</div>
+        <div class="card-name">Cauchy-Schwarz Inequality</div>
+        <div class="card-intuition">The correlation coefficient is bounded between \(-1\) and \(1\) — this is why. A workhorse for bounding expectations of products.</div>
+        <div class="formula-box green">
+          $$\big(E[XY]\big)^2 \leq E[X^2] \cdot E[Y^2]$$
+          <div class="formula-note">Equivalently: \(|\text{Cov}(X,Y)| \leq \sigma_X \sigma_Y\), i.e. \(|\rho| \leq 1\)</div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Prove \(|\rho_{X,Y}| \leq 1\).</div>
+        <div class="example-steps"><span class="step-label">APPLY →</span> \(|\text{Cov}(X,Y)|^2 \leq \text{Var}(X)\text{Var}(Y)\) by C-S</div>
+        <div class="example-answer">\(|\rho| = |\text{Cov}|/(\sigma_X\sigma_Y) \leq 1\;\checkmark\)</div>
       </div>
     </div>
 
@@ -989,12 +1038,10 @@
 </div>
 
 
-<!-- ╔═══════════════════════════════════════════╗ -->
-<!-- ║  SECTION 6 — ADVANCED & TRICKS            ║ -->
-<!-- ╚═══════════════════════════════════════════╝ -->
+<!-- ═══════════════ 08 — ADVANCED & TRICKS ═══════════════ -->
 <div class="section" id="advanced">
   <div class="section-header">
-    <span class="section-number">06</span>
+    <span class="section-number">08</span>
     <h2 class="section-title">Advanced Concepts &amp; Interview Favorites</h2>
   </div>
   <div class="card-grid">
@@ -1003,18 +1050,14 @@
       <div class="card-top">
         <div class="card-label label-advanced">★ Classic</div>
         <div class="card-name">Birthday Problem</div>
-        <div class="card-intuition">How many people for a >50% chance two share a birthday? Far fewer than you think — the number of <em>pairs</em> grows quadratically.</div>
-        <div class="formula-box rose">
-          $$P(\text{collision}) = 1 - \prod_{i=0}^{n-1} \frac{365 - i}{365}$$
-        </div>
+        <div class="card-intuition">Pairs grow quadratically, so collisions happen sooner than intuition suggests.</div>
+        <div class="formula-box rose">$$P(\text{collision}) = 1 - \prod_{i=0}^{n-1} \frac{365-i}{365}$$</div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">\(P(\text{at least 2 of 23 people share a birthday})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">COMPLEMENT →</span> \(P(\text{all different}) = \frac{365}{365} \cdot \frac{364}{365} \cdots \frac{343}{365} \approx 0.4927\)
-        </div>
-        <div class="example-answer">\(P(\text{match}) \approx 1 - 0.4927 = 0.5073\) — just 23 people!</div>
+        <div class="example-q">What is the probability that at least 2 of 23 people share a birthday?</div>
+        <div class="example-steps"><span class="step-label">COMPLEMENT →</span> \(P(\text{all diff}) \approx 0.4927\)</div>
+        <div class="example-answer">\(\approx 0.5073\) — just 23!</div>
       </div>
     </div>
 
@@ -1022,39 +1065,34 @@
       <div class="card-top">
         <div class="card-label label-advanced">★ Classic</div>
         <div class="card-name">Derangements</div>
-        <div class="card-intuition">A permutation where <em>no element</em> appears in its original position. "Everyone gets the wrong hat."</div>
+        <div class="card-intuition">Permutation where <em>nothing</em> is in its original position.</div>
         <div class="formula-box rose">
-          $$D_n = n!\, \sum_{k=0}^{n} \frac{(-1)^k}{k!}$$
-          <div class="formula-note">As \(n \to \infty\),\; \(P(\text{derangement}) \to \frac{1}{e} \approx 0.3679\)</div>
+          $$D_n = n!\sum_{k=0}^{n} \frac{(-1)^k}{k!}$$
+          <div class="formula-note">\(P \to 1/e \approx 0.368\) as \(n \to \infty\)</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">4 letters in 4 envelopes at random. \(P(\text{no letter in correct envelope})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">D(4) →</span> \(4!\left(1 - 1 + \frac{1}{2} - \frac{1}{6} + \frac{1}{24}\right) = 24 \times \frac{3}{8} = 9\)<br>
-          <span class="step-label">P →</span> \(\frac{D_4}{4!} = \frac{9}{24}\)
-        </div>
-        <div class="example-answer">\(= \dfrac{3}{8} = 0.375\)</div>
+        <div class="example-q">4 letters are placed randomly in 4 envelopes. What is \(P(\text{no letter is in the correct envelope})\)?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(D_4 = 9\), \(P = 9/24\)</div>
+        <div class="example-answer">\(= 3/8 = 0.375\)</div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-top">
         <div class="card-label label-advanced">★ High-frequency</div>
-        <div class="card-name">Coupon Collector Problem</div>
-        <div class="card-intuition">How many random draws (with replacement) to collect all \(n\) distinct types? Each new unique type gets harder to find.</div>
+        <div class="card-name">Coupon Collector</div>
+        <div class="card-intuition">Draws with replacement to collect all \(n\) types. Sum of Geometric waits.</div>
         <div class="formula-box rose">
-          $$E[T] = n\, H_n = n\left(1 + \frac{1}{2} + \frac{1}{3} + \cdots + \frac{1}{n}\right)$$
-          <div class="formula-note">\(H_n\) is the \(n\)-th harmonic number \(\approx \ln(n) + 0.5772\)</div>
+          $$E[T] = n\,H_n = n\!\left(1 + \tfrac{1}{2} + \cdots + \tfrac{1}{n}\right)$$
+          <div class="formula-note">\(H_n \approx \ln n + 0.5772\)</div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">A cereal box has one of 6 toys. Expected boxes to collect all 6?</div>
-        <div class="example-steps">
-          <span class="step-label">SOLVE →</span> \(E = 6\left(1 + \frac{1}{2} + \frac{1}{3} + \frac{1}{4} + \frac{1}{5} + \frac{1}{6}\right) = 6 \times 2.45\)
-        </div>
+        <div class="example-q">A cereal box contains one of 6 different toys. How many boxes do you expect to buy to collect all 6?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(6 \times 2.45\)</div>
         <div class="example-answer">\(= 14.7\) boxes</div>
       </div>
     </div>
@@ -1063,19 +1101,16 @@
       <div class="card-top">
         <div class="card-label label-advanced">★ High-frequency</div>
         <div class="card-name">Gambler's Ruin</div>
-        <div class="card-intuition">Start with \$\(i\). Each round: win \$1 with prob \(p\), lose \$1 with prob \(q = 1-p\). Probability of reaching \$\(N\) before going broke?</div>
+        <div class="card-intuition">Start \$\(i\), win/lose \$1 per round. Reach \$\(N\) or \$0?</div>
         <div class="formula-box rose">
-          $$\text{If } p \neq q: \quad P_i = \frac{1 - (q/p)^i}{1 - (q/p)^N}$$
-          $$\text{If } p = q = \tfrac{1}{2}: \quad P_i = \frac{i}{N}$$
+          $$p \neq q:\; P_i = \frac{1-(q/p)^i}{1-(q/p)^N} \qquad p = q:\; P_i = \frac{i}{N}$$
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Fair coin flips. Start with \$4, goal \$10. \(P(\text{reach \$10})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">FAIR CASE →</span> \(p = q = 0.5 \;\Rightarrow\; P = \frac{i}{N} = \frac{4}{10}\)
-        </div>
-        <div class="example-answer">\(= 0.4\) (40%)</div>
+        <div class="example-q">Fair coin flips. You start with $4, goal is $10. What is \(P(\text{reaching \$10 before going broke})\)?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(4/10\)</div>
+        <div class="example-answer">\(= 0.4\)</div>
       </div>
     </div>
 
@@ -1083,20 +1118,16 @@
       <div class="card-top">
         <div class="card-label label-identity">Identity / Trick</div>
         <div class="card-name">Indicator Variables</div>
-        <div class="card-intuition">The most powerful trick in expected value calculations. Decompose a count into a sum of 0/1 indicators, then use linearity of expectation.</div>
+        <div class="card-intuition">Decompose counts into 0/1 indicators. Use linearity — no independence needed.</div>
         <div class="formula-box green">
-          $$X = \sum_{i} \mathbf{1}(A_i) \quad\Longrightarrow\quad E[X] = \sum_{i} P(A_i)$$
-          <div class="formula-note">No independence needed!</div>
+          $$X = \sum_i \mathbf{1}(A_i) \;\Rightarrow\; E[X] = \sum_i P(A_i)$$
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Shuffle a deck of 52. Expected number of cards in their original position?</div>
-        <div class="example-steps">
-          <span class="step-label">LET →</span> \(X_i = \mathbf{1}(\text{card } i \text{ in position } i)\),\; \(P(X_i = 1) = \frac{1}{52}\)<br>
-          <span class="step-label">E[X] →</span> \(\sum P(X_i = 1) = 52 \times \frac{1}{52}\)
-        </div>
-        <div class="example-answer">\(= 1\) (always, regardless of deck size!)</div>
+        <div class="example-q">Shuffle a deck of 52 cards. What is the expected number of cards that end up in their original position?</div>
+        <div class="example-steps"><span class="step-label">SOLVE →</span> \(52 \times 1/52\)</div>
+        <div class="example-answer">\(= 1\) (always!)</div>
       </div>
     </div>
 
@@ -1104,25 +1135,22 @@
       <div class="card-top">
         <div class="card-label label-identity">Identity / Trick</div>
         <div class="card-name">Key Combinatorial Identities</div>
-        <div class="card-intuition">These come up repeatedly in manipulating binomial coefficients and simplifying expressions.</div>
+        <div class="card-intuition">Repeatedly useful when manipulating binomial coefficients.</div>
         <div class="formula-box green" style="text-align:left;padding-left:24px;">
           <div style="line-height:2.4;">
-            <strong style="color:var(--accent-green);font-size:12px;">Symmetry:</strong> \(\quad\dbinom{n}{k} = \dbinom{n}{n-k}\)<br>
-            <strong style="color:var(--accent-green);font-size:12px;">Pascal's:</strong> \(\quad\dbinom{n}{k} = \dbinom{n-1}{k-1} + \dbinom{n-1}{k}\)<br>
-            <strong style="color:var(--accent-green);font-size:12px;">Vandermonde:</strong> \(\quad\dbinom{m+n}{r} = \displaystyle\sum_{k} \dbinom{m}{k}\,\dbinom{n}{r-k}\)<br>
-            <strong style="color:var(--accent-green);font-size:12px;">Hockey Stick:</strong> \(\quad\displaystyle\sum_{i=r}^{n} \dbinom{i}{r} = \dbinom{n+1}{r+1}\)<br>
-            <strong style="color:var(--accent-green);font-size:12px;">Binomial Thm:</strong> \(\quad(x+y)^n = \displaystyle\sum_{k=0}^{n} \dbinom{n}{k}\, x^k\, y^{n-k}\)
+            <strong style="color:var(--accent-green);font-size:12px;">Symmetry:</strong> \(\;\binom{n}{k} = \binom{n}{n-k}\)<br>
+            <strong style="color:var(--accent-green);font-size:12px;">Pascal's:</strong> \(\;\binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}\)<br>
+            <strong style="color:var(--accent-green);font-size:12px;">Vandermonde:</strong> \(\;\binom{m+n}{r} = \sum_k \binom{m}{k}\binom{n}{r-k}\)<br>
+            <strong style="color:var(--accent-green);font-size:12px;">Hockey Stick:</strong> \(\;\sum_{i=r}^{n} \binom{i}{r} = \binom{n+1}{r+1}\)<br>
+            <strong style="color:var(--accent-green);font-size:12px;">Binomial Thm:</strong> \(\;(x+y)^n = \sum_{k=0}^{n} \binom{n}{k} x^k y^{n-k}\)
           </div>
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Example — Vandermonde</div>
-        <div class="example-q">Choose 3 people from 5 men and 7 women. Verify: \(\binom{12}{3} = \sum \binom{5}{k}\binom{7}{3-k}\)</div>
-        <div class="example-steps">
-          <span class="step-label">EXPAND →</span> \(\binom{5}{0}\binom{7}{3} + \binom{5}{1}\binom{7}{2} + \binom{5}{2}\binom{7}{1} + \binom{5}{3}\binom{7}{0}\)<br>
-          \(= 1\!\cdot\!35 + 5\!\cdot\!21 + 10\!\cdot\!7 + 10\!\cdot\!1 = 35 + 105 + 70 + 10\)
-        </div>
-        <div class="example-answer">\(= 220 = \dbinom{12}{3}\;\checkmark\)</div>
+        <div class="example-q">Choose 3 people from a group of 5 men and 7 women. Verify Vandermonde: \(\binom{12}{3} = \sum \binom{5}{k}\binom{7}{3-k}\).</div>
+        <div class="example-steps"><span class="step-label">EXPAND →</span> \(35+105+70+10\)</div>
+        <div class="example-answer">\(= 220 = \binom{12}{3}\;\checkmark\)</div>
       </div>
     </div>
 
@@ -1130,47 +1158,43 @@
       <div class="card-top">
         <div class="card-label label-advanced">★ Key technique</div>
         <div class="card-name">Law of Total Expectation (Tower Property)</div>
-        <div class="card-intuition">Break \(E[X]\) into cases. The go-to technique for recursive expected value problems in interviews.</div>
+        <div class="card-intuition">Break \(E[X]\) into cases. The go-to for recursive problems.</div>
         <div class="formula-box rose">
-          $$E[X] = \sum_{i} E[X \mid B_i]\, P(B_i)$$
-          <div class="formula-note">Also: \(E[X] = E\big[E[X \mid Y]\big]\) — the "tower" law</div>
+          $$E[X] = \sum_i E[X \mid B_i]\,P(B_i) = E\!\big[E[X \mid Y]\big]$$
         </div>
       </div>
       <div class="example-block">
         <div class="example-tag">Classic Interview Example</div>
-        <div class="example-q">Expected coin flips to get two Heads in a row?</div>
+        <div class="example-q">What is the expected number of coin flips to get two Heads in a row?</div>
         <div class="example-steps">
-          <span class="step-label">STATES →</span> Let \(E_0\) = need HH, \(E_1\) = have one H, need another<br>
           <span class="step-label">E₀ →</span> \(E_0 = 1 + \frac{1}{2}E_1 + \frac{1}{2}E_0\)<br>
-          <span class="step-label">E₁ →</span> \(E_1 = 1 + \frac{1}{2}\cdot 0 + \frac{1}{2}E_0\)<br>
-          <span class="step-label">SOLVE →</span> From \(E_1\!: E_1 = 1 + \frac{1}{2}E_0\). Sub into \(E_0\!: E_0 = 1 + \frac{1}{2}(1 + \frac{1}{2}E_0) + \frac{1}{2}E_0\)
+          <span class="step-label">E₁ →</span> \(E_1 = 1 + \frac{1}{2}E_0\)<br>
+          <span class="step-label">SOLVE →</span> \(E_0 = 6\)
         </div>
-        <div class="example-answer">\(E[\text{flips for HH}] = 6\)</div>
+        <div class="example-answer">\(E[\text{HH}] = 6\)</div>
       </div>
     </div>
 
+    <!-- Decision Guide -->
     <div class="card card-wide">
       <div class="card-top">
         <div class="card-label label-identity">Reference</div>
         <div class="card-name">Decision Guide: Which Formula Do I Use?</div>
         <div style="overflow-x:auto;">
           <table class="guide-table">
-            <thead>
-              <tr>
-                <th>QUESTION PATTERN</th>
-                <th>TOOL</th>
-                <th>KEY SIGNAL</th>
-              </tr>
-            </thead>
+            <thead><tr><th>QUESTION PATTERN</th><th>TOOL</th><th>KEY SIGNAL</th></tr></thead>
             <tbody>
-              <tr><td>Arrange all items in a line</td><td>\(n!\)</td><td>All items used, order matters</td></tr>
+              <tr><td>Arrange all items in a line</td><td>\(n!\)</td><td>All items, order matters</td></tr>
               <tr><td>Pick \(r\) from \(n\), order matters</td><td>\(P(n,r)\)</td><td>"first, second, third…"</td></tr>
-              <tr><td>Pick \(r\) from \(n\), order doesn't matter</td><td>\(\binom{n}{r}\)</td><td>"choose", "committee", "hand"</td></tr>
-              <tr><td>\(r\) choices from \(n\) types, repeats OK</td><td>\(n^r\) or \(\binom{n+r-1}{r}\)</td><td>Order → \(n^r\); No order → Stars&Bars</td></tr>
-              <tr><td>Probability of "at least one"</td><td>\(1 - P(\text{none})\)</td><td>Complement is simpler</td></tr>
-              <tr><td>Update belief after data</td><td>Bayes' Theorem</td><td>"given that", reversing conditional</td></tr>
-              <tr><td>Expected count of something</td><td>Indicators + Linearity</td><td>"expected number of …"</td></tr>
-              <tr><td>Expected time until event</td><td>Recursive \(E[X]\) / Geometric</td><td>"how many tries until …"</td></tr>
+              <tr><td>Pick \(r\) from \(n\), order doesn't matter</td><td>\(\binom{n}{r}\)</td><td>"choose", "committee"</td></tr>
+              <tr><td>\(r\) from \(n\) types, repeats OK</td><td>\(n^r\) or \(\binom{n+r-1}{r}\)</td><td>Order → \(n^r\); no order → Stars&Bars</td></tr>
+              <tr><td>"At least one" probability</td><td>\(1 - P(\text{none})\)</td><td>Complement</td></tr>
+              <tr><td>Update belief after evidence</td><td>Bayes' Theorem</td><td>"given that", reverse conditional</td></tr>
+              <tr><td>Expected count</td><td>Indicators + Linearity</td><td>"expected number of…"</td></tr>
+              <tr><td>Expected time until event</td><td>Recursive \(E[X]\) / Geometric</td><td>"how many tries until…"</td></tr>
+              <tr><td>\(P(X \leq k)\), cumulative prob</td><td>CDF \(F(k)\)</td><td>"at most", "within", "no more than"</td></tr>
+              <tr><td>Approximate sum/average of many RVs</td><td>CLT → Normal</td><td>Large \(n\), any distribution</td></tr>
+              <tr><td>Bound probability without full dist.</td><td>Markov / Chebyshev</td><td>"at most how likely", worst-case</td></tr>
             </tbody>
           </table>
         </div>
@@ -1182,38 +1206,24 @@
 
 </div>
 
-<div class="footer">
-  Probability &amp; Combinatorics Cheat Sheet · Quant Interview Prep · 2026
-</div>
+<div class="footer">Probability &amp; Combinatorics Cheat Sheet · Quant Interview Prep · 2026</div>
 
-<!-- ═══════════════ SCRIPTS ═══════════════ -->
 <script>
-  // KaTeX auto-render
   document.addEventListener("DOMContentLoaded", function() {
     renderMathInElement(document.body, {
-      delimiters: [
-        {left: "$$", right: "$$", display: true},
-        {left: "\\(", right: "\\)", display: false}
-      ],
+      delimiters: [{left:"$$",right:"$$",display:true},{left:"\\(",right:"\\)",display:false}],
       throwOnError: false
     });
   });
-
-  // Theme toggle
   const toggle = document.getElementById('themeToggle');
   const html = document.documentElement;
-
-  // Load saved preference
   const saved = localStorage.getItem('prob-theme');
   if (saved) html.setAttribute('data-theme', saved);
-
   toggle.addEventListener('click', () => {
-    const current = html.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-theme', next);
     localStorage.setItem('prob-theme', next);
   });
 </script>
-
 </body>
 </html>
