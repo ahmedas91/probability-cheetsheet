@@ -34,7 +34,9 @@
     --toggle-bg: #e2dfd9; --toggle-knob: #ffffff; --toggle-icon: "☀️";
   }
   * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
   body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; line-height:1.7; min-height:100vh; transition:background .35s,color .35s; }
+  a:focus-visible, button:focus-visible { outline:2px solid var(--accent-violet); outline-offset:2px; border-radius:6px; }
   .katex { color:var(--text-bright); font-size:1.08em; }
   .formula-box .katex, .cdf-box .katex { font-size:1.15em; }
 
@@ -45,6 +47,12 @@
   .toggle-knob::after { content:var(--toggle-icon); }
   [data-theme="light"] .toggle-knob { transform:translateX(26px); }
 
+  /* Reveal-all toolbar button */
+  .reveal-all { position:fixed; top:20px; right:90px; z-index:999; height:30px; padding:0 14px; background:var(--toggle-bg); border:1px solid var(--border); border-radius:20px; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.2px; text-transform:uppercase; color:var(--text-dim); transition:background .3s,border-color .3s,color .3s; display:flex; align-items:center; gap:7px; }
+  .reveal-all:hover { border-color:var(--accent-amber); color:var(--accent-amber); }
+  .reveal-all .ra-icon { font-size:12px; line-height:1; }
+  @media(max-width:600px){ .reveal-all{ right:84px; padding:0 10px; } .reveal-all .ra-text{ display:none; } }
+
   /* Hero */
   .hero { padding:80px 40px 60px; text-align:center; position:relative; overflow:hidden; border-bottom:1px solid var(--border); transition:border-color .35s; }
   .hero::before { content:''; position:absolute; top:-120px; left:50%; transform:translateX(-50%); width:600px; height:600px; background:radial-gradient(circle,var(--tint-violet) 0%,transparent 70%); pointer-events:none; }
@@ -52,6 +60,10 @@
   .hero h1 { font-family:'Crimson Pro',serif; font-size:clamp(36px,5vw,56px); font-weight:300; color:var(--heading); letter-spacing:-.5px; margin-bottom:12px; }
   .hero h1 em { font-style:italic; color:var(--accent-blue); }
   .hero p { font-size:15px; color:var(--text-dim); max-width:520px; margin:0 auto; }
+  .hero-meta { margin-top:20px; display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:1px; color:var(--text-dim); }
+  .hero-meta span.dot { color:var(--border-accent); }
+  .hero-tip { margin-top:16px; font-size:12.5px; color:var(--text-dim); max-width:560px; margin-left:auto; margin-right:auto; }
+  .hero-tip strong { color:var(--accent-amber); font-weight:600; }
 
   /* Nav */
   .toc { position:sticky; top:0; z-index:100; background:var(--bg); border-bottom:1px solid var(--border); padding:12px 40px; overflow-x:auto; white-space:nowrap; display:flex; gap:6px; align-items:center; transition:background .35s,border-color .35s; }
@@ -63,7 +75,7 @@
   .container { max-width:1200px; margin:0 auto; padding:40px 24px 120px; }
 
   /* Section */
-  .section { margin-bottom:64px; }
+  .section { margin-bottom:64px; scroll-margin-top:72px; }
   .section-header { display:flex; align-items:center; gap:16px; margin-bottom:28px; padding-bottom:16px; border-bottom:1px solid var(--border); transition:border-color .35s; }
   .section-number { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent-blue); background:var(--tint-blue); padding:4px 12px; border-radius:12px; flex-shrink:0; }
   .section-title { font-family:'Crimson Pro',serif; font-size:28px; font-weight:600; color:var(--heading); letter-spacing:-.3px; }
@@ -71,6 +83,10 @@
   /* Card grid */
   .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(520px,1fr)); gap:20px; }
   @media(max-width:600px){ .card-grid{grid-template-columns:1fr;} }
+
+  /* Subhead divider (used inside a card-grid to group cards) */
+  .subhead { grid-column:1/-1; display:flex; align-items:center; gap:14px; margin:10px 0 0; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:var(--text-dim); }
+  .subhead::after { content:''; flex:1; height:1px; background:var(--border); }
 
   /* Card */
   .card { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:border-color .25s,background .25s,box-shadow .25s; }
@@ -108,9 +124,21 @@
   .example-block { background:var(--formula-bg); border-top:1px solid var(--formula-border); padding:20px 28px; transition:background .35s,border-color .35s; }
   .example-tag { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent-amber); margin-bottom:10px; }
   .example-q { font-family:'Crimson Pro',serif; font-size:16px; color:var(--text-bright); font-style:italic; margin-bottom:14px; line-height:1.6; }
-  .example-steps { font-size:13.5px; color:var(--text); line-height:2; }
-  .example-steps .step-label { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent-teal); letter-spacing:1px; margin-right:4px; }
-  .example-answer { margin-top:12px; padding:10px 16px; background:var(--tint-blue); border-left:3px solid var(--accent-blue); border-radius:0 6px 6px 0; font-size:15px; color:var(--accent-blue); font-weight:600; }
+
+  /* Click-to-reveal solution */
+  .reveal-btn { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent-amber); background:var(--tint-amber); border:1px solid color-mix(in srgb,var(--accent-amber) 30%,transparent); border-radius:6px; padding:7px 14px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:background .2s,border-color .2s; }
+  .reveal-btn:hover { background:color-mix(in srgb,var(--accent-amber) 16%,transparent); border-color:color-mix(in srgb,var(--accent-amber) 50%,transparent); }
+  .reveal-btn::before { content:'▸'; font-size:9px; transition:transform .2s; }
+  .example-block.revealed .reveal-btn::before { transform:rotate(90deg); }
+  .solution { display:none; margin-top:16px; }
+  .example-block.revealed .solution { display:block; animation:fadeIn .25s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+
+  .example-steps { font-size:13.5px; color:var(--text); line-height:1.8; }
+  .example-steps .step { display:block; margin-bottom:7px; }
+  .example-steps .step:last-child { margin-bottom:0; }
+  .example-steps .step-label { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent-teal); letter-spacing:1px; margin-right:6px; }
+  .example-answer { margin-top:14px; padding:10px 16px; background:var(--tint-blue); border-left:3px solid var(--accent-blue); border-radius:0 6px 6px 0; font-size:15px; color:var(--accent-blue); font-weight:600; }
 
   .card-wide { grid-column:1/-1; }
   .tip-box { background:var(--tint-amber); border:1px dashed color-mix(in srgb,var(--accent-amber) 30%,transparent); border-radius:8px; padding:14px 18px; margin-top:14px; font-size:13px; color:var(--accent-amber); line-height:1.65; }
@@ -129,17 +157,26 @@
   ::-webkit-scrollbar { width:6px; height:6px; }
   ::-webkit-scrollbar-track { background:transparent; }
   ::-webkit-scrollbar-thumb { background:var(--border-accent); border-radius:3px; }
-  @media print { .theme-toggle{display:none;} .toc{display:none;} .card{break-inside:avoid;} }
+  @media print {
+    .theme-toggle{display:none;} .reveal-all{display:none;} .toc{display:none;}
+    .card{break-inside:avoid;}
+    .reveal-btn{display:none;} .solution{display:block !important;}
+  }
 </style>
 </head>
 <body>
 
 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"><div class="toggle-knob"></div></button>
+<button class="reveal-all" id="revealAll" type="button" aria-label="Reveal all solutions"><span class="ra-icon">◍</span><span class="ra-text">Reveal all</span></button>
 
 <div class="hero">
   <div class="hero-label">Reference Sheet</div>
   <h1>Probability &amp; <em>Combinatorics</em></h1>
   <p>Concepts, formulas, and worked examples for quant interview preparation. Every card = one concept you must know cold.</p>
+  <div class="hero-meta">
+    <span>8 sections</span><span class="dot">·</span><span>50+ concepts</span><span class="dot">·</span><span>self-test ready</span>
+  </div>
+  <p class="hero-tip">Every example hides its solution — click <strong>Show solution</strong> to test yourself first, or hit <strong>Reveal all</strong> (top-right) to use it as a flat reference.</p>
 </div>
 
 <nav class="toc">
@@ -176,8 +213,14 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">How many ways can 5 people line up for a photo?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(5! = 120\)</div>
-        <div class="example-answer">\(= 120\)</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">SET UP →</span> 5 choices for the 1st spot, 4 for the 2nd, then 3, 2, 1.</div>
+            <div class="step"><span class="step-label">MULTIPLY →</span> \(5 \times 4 \times 3 \times 2 \times 1 = 5!\)</div>
+          </div>
+          <div class="example-answer">\(= 120\)</div>
+        </div>
       </div>
     </div>
 
@@ -190,9 +233,16 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">A license plate has 3 letters then 4 digits. How many possible plates?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(26^3 \times 10^4\)</div>
-        <div class="example-answer">\(= 175{,}760{,}000\)</div>
+        <div class="example-q">A license plate has 3 letters then 4 digits (repeats allowed). How many possible plates?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">LETTERS →</span> 26 options each \(\Rightarrow 26^3\)</div>
+            <div class="step"><span class="step-label">DIGITS →</span> 10 options each \(\Rightarrow 10^4\)</div>
+            <div class="step"><span class="step-label">MULTIPLY →</span> \(26^3 \times 10^4 = 17{,}576 \times 10{,}000\)</div>
+          </div>
+          <div class="example-answer">\(= 175{,}760{,}000\)</div>
+        </div>
       </div>
     </div>
 
@@ -205,9 +255,16 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">A race has 10 runners. How many ways to award Gold, Silver, Bronze?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(P(10,3) = 10 \times 9 \times 8\)</div>
-        <div class="example-answer">\(= 720\)</div>
+        <div class="example-q">A race has 10 runners. How many ways to award distinct Gold, Silver, and Bronze medals?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">ORDER MATTERS →</span> gold \(\neq\) silver, so we rank the top 3.</div>
+            <div class="step"><span class="step-label">FILL SLOTS →</span> 10 for gold, 9 for silver, 8 for bronze.</div>
+            <div class="step"><span class="step-label">FORMULA →</span> \(P(10,3) = \dfrac{10!}{7!} = 10 \times 9 \times 8\)</div>
+          </div>
+          <div class="example-answer">\(= 720\)</div>
+        </div>
       </div>
     </div>
 
@@ -220,9 +277,15 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">How many 4-digit PINs (digits 0–9)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(10^4\)</div>
-        <div class="example-answer">\(= 10{,}000\)</div>
+        <div class="example-q">How many 4-digit PINs are possible (digits 0–9, repeats allowed)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">EACH SLOT →</span> 10 independent choices, repeats allowed.</div>
+            <div class="step"><span class="step-label">MULTIPLY →</span> \(10 \times 10 \times 10 \times 10 = 10^4\)</div>
+          </div>
+          <div class="example-answer">\(= 10{,}000\)</div>
+        </div>
       </div>
     </div>
 
@@ -239,8 +302,15 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">How many distinct arrangements of the letters in MISSISSIPPI?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\dfrac{11!}{1!\cdot 4!\cdot 4!\cdot 2!}\)</div>
-        <div class="example-answer">\(= 34{,}650\)</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">COUNT →</span> 11 letters: M\(\times\)1, I\(\times\)4, S\(\times\)4, P\(\times\)2.</div>
+            <div class="step"><span class="step-label">DIVIDE OUT →</span> identical letters create indistinguishable swaps.</div>
+            <div class="step"><span class="step-label">FORMULA →</span> \(\dfrac{11!}{1!\cdot 4!\cdot 4!\cdot 2!}\)</div>
+          </div>
+          <div class="example-answer">\(= 34{,}650\)</div>
+        </div>
       </div>
     </div>
 
@@ -254,8 +324,14 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">A committee of 3 is chosen from 8 people. How many ways?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\dbinom{8}{3} = \dfrac{8 \times 7 \times 6}{6}\)</div>
-        <div class="example-answer">\(= 56\)</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">NO ORDER →</span> committee \(\{A,B,C\} = \{C,B,A\}\), so divide out the \(3!\) orderings.</div>
+            <div class="step"><span class="step-label">CHOOSE →</span> \(\dbinom{8}{3} = \dfrac{8 \times 7 \times 6}{3 \times 2 \times 1}\)</div>
+          </div>
+          <div class="example-answer">\(= 56\)</div>
+        </div>
       </div>
     </div>
 
@@ -268,9 +344,16 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">A shop has 4 flavors of ice cream. You buy 6 scoops. How many combinations?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\dbinom{9}{6} = 84\)</div>
-        <div class="example-answer">\(= 84\)</div>
+        <div class="example-q">An ice-cream shop has 4 flavors. You buy 6 scoops (repeats OK, order doesn't matter). How many combinations?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">MODEL →</span> 6 stars (scoops) and \(4-1=3\) bars (dividers between flavors).</div>
+            <div class="step"><span class="step-label">ARRANGE →</span> choose which 6 of the \(6+3=9\) slots are stars.</div>
+            <div class="step"><span class="step-label">FORMULA →</span> \(\dbinom{n+r-1}{r} = \dbinom{4+6-1}{6} = \dbinom{9}{6}\)</div>
+          </div>
+          <div class="example-answer">\(= 84\)</div>
+        </div>
       </div>
     </div>
 
@@ -283,9 +366,15 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">How many ways can 6 people sit around a round table?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(5! = 120\)</div>
-        <div class="example-answer">\(= 120\)</div>
+        <div class="example-q">How many ways can 6 people sit around a round table (rotations count as the same)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">BREAK SYMMETRY →</span> fix one person's seat as a reference point.</div>
+            <div class="step"><span class="step-label">ARRANGE REST →</span> the other 5 fill the remaining seats in \((6-1)! = 5!\) ways.</div>
+          </div>
+          <div class="example-answer">\(= 120\)</div>
+        </div>
       </div>
     </div>
 
@@ -312,9 +401,16 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">What is the probability of rolling a sum of 7 with two fair dice?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> 6 favorable out of 36</div>
-        <div class="example-answer">\(= 1/6 \approx 0.167\)</div>
+        <div class="example-q">Rolling two fair dice, what is \(P(\text{sum} = 7)\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">SAMPLE SPACE →</span> \(6 \times 6 = 36\) equally likely outcomes.</div>
+            <div class="step"><span class="step-label">FAVORABLE →</span> \((1,6),(2,5),(3,4),(4,3),(5,2),(6,1)\) → 6 ways.</div>
+            <div class="step"><span class="step-label">DIVIDE →</span> \(6/36\)</div>
+          </div>
+          <div class="example-answer">\(= 1/6 \approx 0.167\)</div>
+        </div>
       </div>
     </div>
 
@@ -328,8 +424,15 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">Roll a die 4 times. What is \(P(\text{at least one 6})\)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(1 - (5/6)^4\)</div>
-        <div class="example-answer">\(= 671/1296 \approx 0.518\)</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">FLIP IT →</span> "at least one 6" is the complement of "no 6 at all."</div>
+            <div class="step"><span class="step-label">NO SIX →</span> each roll misses with prob \(5/6\), so \(P(A^c) = (5/6)^4\).</div>
+            <div class="step"><span class="step-label">SUBTRACT →</span> \(1 - (5/6)^4 = 1 - 625/1296\)</div>
+          </div>
+          <div class="example-answer">\(= 671/1296 \approx 0.518\)</div>
+        </div>
       </div>
     </div>
 
@@ -346,8 +449,15 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">Draw one card from a standard deck. What is \(P(\text{Heart or King})\)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(13/52 + 4/52 - 1/52\)</div>
-        <div class="example-answer">\(= 4/13 \approx 0.308\)</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">COUNT EACH →</span> 13 hearts, 4 kings.</div>
+            <div class="step"><span class="step-label">OVERLAP →</span> the King of Hearts is counted in both → subtract 1.</div>
+            <div class="step"><span class="step-label">COMBINE →</span> \((13 + 4 - 1)/52 = 16/52\)</div>
+          </div>
+          <div class="example-answer">\(= 4/13 \approx 0.308\)</div>
+        </div>
       </div>
     </div>
 
@@ -364,8 +474,15 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">Draw 2 cards without replacement. What is \(P(\text{both Aces})\)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \((4/52)(3/51)\)</div>
-        <div class="example-answer">\(= 1/221 \approx 0.0045\)</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">FIRST ACE →</span> \(P = 4/52\).</div>
+            <div class="step"><span class="step-label">SECOND | FIRST →</span> now 3 aces left in 51 cards → \(3/51\).</div>
+            <div class="step"><span class="step-label">MULTIPLY →</span> \((4/52)(3/51)\)</div>
+          </div>
+          <div class="example-answer">\(= 1/221 \approx 0.0045\)</div>
+        </div>
       </div>
     </div>
 
@@ -384,8 +501,15 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">Flip a fair coin twice. Are "Heads on flip 1" and "Heads on flip 2" independent?</div>
-        <div class="example-steps"><span class="step-label">CHECK →</span> \(P(H_1)P(H_2) = 1/4 = P(H_1 \cap H_2)\;\checkmark\)</div>
-        <div class="example-answer">Yes, independent.</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">PRODUCT →</span> \(P(H_1)\,P(H_2) = \tfrac12 \cdot \tfrac12 = 1/4\).</div>
+            <div class="step"><span class="step-label">JOINT →</span> \(P(H_1 \cap H_2) = P(\text{HH}) = 1/4\).</div>
+            <div class="step"><span class="step-label">COMPARE →</span> equal, so the condition holds. \(\checkmark\)</div>
+          </div>
+          <div class="example-answer">Yes — knowing flip 1 tells you nothing about flip 2.</div>
+        </div>
       </div>
     </div>
 
@@ -400,9 +524,16 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">In 100 students: 40 take Math, 30 take Physics, 20 take CS. 14 take M∩P, 10 take M∩C, 8 take P∩C, 5 take all three. \(P(\text{student takes at least one})\)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \((40+30+20-14-10-8+5)/100\)</div>
-        <div class="example-answer">\(= 0.63\)</div>
+        <div class="example-q">In 100 students: 40 take Math, 30 Physics, 20 CS; 14 M∩P, 10 M∩C, 8 P∩C, 5 take all three. \(P(\text{at least one})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">ADD SINGLES →</span> \(40 + 30 + 20 = 90\).</div>
+            <div class="step"><span class="step-label">SUBTRACT PAIRS →</span> \(-14 - 10 - 8 = -32\).</div>
+            <div class="step"><span class="step-label">ADD TRIPLE →</span> \(+5\), giving 63 students out of 100.</div>
+          </div>
+          <div class="example-answer">\(= 0.63\)</div>
+        </div>
       </div>
     </div>
 
@@ -426,9 +557,16 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Roll two dice. Given the sum is \(\geq 10\), what is the probability both dice show 5 or more?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> 4 of 6 qualifying outcomes</div>
-        <div class="example-answer">\(= 2/3\)</div>
+        <div class="example-q">Roll two fair dice. Given the sum is at least 10, what is \(P(\text{both dice show 5 or 6})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">SHRINK SPACE →</span> condition "sum \(\geq 10\)": \(\{(4,6),(5,5),(6,4),(5,6),(6,5),(6,6)\}\) → 6 outcomes.</div>
+            <div class="step"><span class="step-label">FAVORABLE →</span> both in \(\{5,6\}\): \((5,5),(5,6),(6,5),(6,6)\) → 4 outcomes.</div>
+            <div class="step"><span class="step-label">DIVIDE →</span> \(4/6\)</div>
+          </div>
+          <div class="example-answer">\(= 2/3\)</div>
+        </div>
       </div>
     </div>
 
@@ -443,9 +581,16 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Factory has Machine A (60% of output, 2% defect rate) and Machine B (40%, 5% defects). What is \(P(\text{random item is defective})\)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(0.02(0.6) + 0.05(0.4)\)</div>
-        <div class="example-answer">\(= 0.032\) (3.2%)</div>
+        <div class="example-q">Machine A makes 60% of output (2% defective); Machine B makes 40% (5% defective). \(P(\text{a random item is defective})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">PARTITION →</span> by machine: \(P(A)=0.6\), \(P(B)=0.4\).</div>
+            <div class="step"><span class="step-label">WEIGHT →</span> each defect rate by its machine's share: \(0.6(0.02) + 0.4(0.05)\).</div>
+            <div class="step"><span class="step-label">ADD →</span> \(0.012 + 0.020\)</div>
+          </div>
+          <div class="example-answer">\(= 0.032\) (3.2%)</div>
+        </div>
       </div>
     </div>
 
@@ -461,12 +606,17 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Classic Interview Example</div>
-        <div class="example-q">A disease affects 1% of the population. A test is 95% accurate (both sensitivity and specificity). If you test positive, what's \(P(\text{you have the disease})\)?</div>
-        <div class="example-steps">
-          <span class="step-label">TOTAL →</span> \(P(+) = 0.95(0.01) + 0.05(0.99) = 0.059\)<br>
-          <span class="step-label">BAYES →</span> \(0.0095 / 0.059\)
+        <div class="example-q">A disease affects 1% of people. A test is 95% accurate (sensitivity = specificity = 95%). You test positive — what is \(P(\text{disease})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">PRIOR →</span> \(P(D) = 0.01\), \(P(D^c) = 0.99\).</div>
+            <div class="step"><span class="step-label">EVIDENCE →</span> \(P(+) = \underbrace{0.95(0.01)}_{\text{true +}} + \underbrace{0.05(0.99)}_{\text{false +}} = 0.0095 + 0.0495 = 0.059\).</div>
+            <div class="step"><span class="step-label">BAYES →</span> \(P(D \mid +) = 0.0095 / 0.059\).</div>
+            <div class="step"><span class="step-label">WHY →</span> false positives from the huge healthy group swamp the few true positives.</div>
+          </div>
+          <div class="example-answer">\(\approx 0.161\) (16.1%) — the base rate dominates</div>
         </div>
-        <div class="example-answer">\(\approx 0.161\) (16.1%) — base rate dominates</div>
       </div>
     </div>
 
@@ -494,9 +644,15 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">You pay $5 to roll a die. You win $ equal to the face value. What is your expected profit?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(E[\text{roll}] = 3.5\), profit \(= 3.5 - 5\)</div>
-        <div class="example-answer">\(= -\$1.50\)</div>
+        <div class="example-q">You pay \$5 to roll a fair die and win \$ equal to the face value. What is your expected profit?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">E[ROLL] →</span> \((1+2+3+4+5+6)/6 = 3.5\).</div>
+            <div class="step"><span class="step-label">PROFIT →</span> winnings \(-\) cost \(= 3.5 - 5\).</div>
+          </div>
+          <div class="example-answer">\(= -\$1.50\) (a losing bet)</div>
+        </div>
       </div>
     </div>
 
@@ -516,9 +672,74 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">\(X \sim\) fair die. Find \(\text{Var}(X)\).</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(E[X^2] = 91/6\), so \(91/6 - 3.5^2\)</div>
-        <div class="example-answer">\(= 35/12 \approx 2.917\)</div>
+        <div class="example-q">Let \(X\) be the roll of a fair die. Find \(\text{Var}(X)\).</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">E[X] →</span> \(3.5\).</div>
+            <div class="step"><span class="step-label">E[X²] →</span> \((1+4+9+16+25+36)/6 = 91/6 \approx 15.17\).</div>
+            <div class="step"><span class="step-label">SUBTRACT →</span> \(\text{Var} = E[X^2] - (E[X])^2 = 91/6 - 3.5^2\).</div>
+          </div>
+          <div class="example-answer">\(= 35/12 \approx 2.917\)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-probability">Probability</div>
+        <div class="card-name">Tail-Sum (Survival) Formula</div>
+        <div class="card-intuition">For non-negative variables, the expectation equals the total area under the survival curve. Often far easier than the direct sum — especially for max/min problems.</div>
+        <div class="dual-formula">
+          <div class="formula-box violet" style="margin-bottom:0;">
+            <div class="formula-note" style="margin:0 0 6px;font-style:normal;color:var(--accent-teal);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;">DISCRETE (non-neg integers)</div>
+            $$E[X] = \sum_{k=1}^{\infty} P(X \geq k)$$
+          </div>
+          <div class="formula-box violet" style="margin-bottom:0;">
+            <div class="formula-note" style="margin:0 0 6px;font-style:normal;color:var(--accent-teal);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;">CONTINUOUS (X ≥ 0)</div>
+            $$E[X] = \int_0^{\infty} P(X > x)\, dx$$
+          </div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Let \(M = \max\) of two fair dice. Find \(E[M]\) using the tail-sum formula.</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">SURVIVAL →</span> \(P(M \geq k) = 1 - P(\text{both} < k) = 1 - \left(\tfrac{k-1}{6}\right)^2\).</div>
+            <div class="step"><span class="step-label">SUM k=1..6 →</span> \(\sum_{k=1}^{6}\left[1 - \left(\tfrac{k-1}{6}\right)^2\right] = 6 - \tfrac{0+1+4+9+16+25}{36}\).</div>
+            <div class="step"><span class="step-label">SIMPLIFY →</span> \(6 - 55/36 = 161/36\).</div>
+          </div>
+          <div class="example-answer">\(= 161/36 \approx 4.472\)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-advanced">★ Key technique</div>
+        <div class="card-name">Law of Total Variance</div>
+        <div class="card-intuition">Variance splits into "spread within each case" plus "spread between the case averages." The variance analog of the tower property — the go-to for two-stage and random-sum problems.</div>
+        <div class="formula-box rose">
+          $$\text{Var}(X) = E\big[\text{Var}(X \mid Y)\big] + \text{Var}\big(E[X \mid Y]\big)$$
+          <div class="formula-note">Mnemonic "EVVE": Expected Variance + Variance of Expectation</div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Roll a die to get \(N\), then flip \(N\) fair coins. Let \(X\) = number of heads. Find \(E[X]\) and \(\text{Var}(X)\).</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">CONDITION →</span> \(X \mid N \sim \text{Bin}(N, \tfrac12)\), so \(E[X\mid N] = N/2\) and \(\text{Var}(X\mid N) = N/4\).</div>
+            <div class="step"><span class="step-label">E[X] →</span> \(E[N/2] = 3.5/2 = 1.75\).</div>
+            <div class="step"><span class="step-label">PIECE 1 →</span> \(E[\text{Var}(X\mid N)] = E[N/4] = 3.5/4 = 0.875\).</div>
+            <div class="step"><span class="step-label">PIECE 2 →</span> \(\text{Var}(E[X\mid N]) = \text{Var}(N/2) = \tfrac14\text{Var}(N) = \tfrac14\cdot\tfrac{35}{12} \approx 0.729\).</div>
+            <div class="step"><span class="step-label">ADD →</span> \(0.875 + 0.729\).</div>
+          </div>
+          <div class="example-answer">\(E[X] = 1.75,\quad \text{Var}(X) \approx 1.604\)</div>
+        </div>
       </div>
     </div>
 
@@ -555,9 +776,15 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Roll two dice \(X\) and \(Y\). What is \(P(X = 1)\)?</div>
-        <div class="example-steps"><span class="step-label">MARGINALIZE →</span> \(\sum_{y=1}^{6} P(X=1,Y=y) = 6 \times \frac{1}{36}\)</div>
-        <div class="example-answer">\(= 1/6\)</div>
+        <div class="example-q">Roll two fair dice \(X\) and \(Y\). What is the marginal \(P(X = 1)\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">JOINT CELLS →</span> each \((X=1, Y=y)\) has probability \(1/36\).</div>
+            <div class="step"><span class="step-label">MARGINALIZE →</span> sum over \(y = 1,\dots,6\): \(\sum_{y=1}^{6} P(X=1,Y=y) = 6 \times \tfrac{1}{36}\).</div>
+          </div>
+          <div class="example-answer">\(= 1/6\)</div>
+        </div>
       </div>
     </div>
 
@@ -579,8 +806,15 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">If \(X\) and \(Y\) are independent, what is \(\text{Cov}(X,Y)\)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(E[XY] = E[X]E[Y]\) when independent</div>
-        <div class="example-answer">\(\text{Cov} = 0\) (but \(\text{Cov}=0 \not\Rightarrow\) independent!)</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">DEFINITION →</span> \(\text{Cov} = E[XY] - E[X]E[Y]\).</div>
+            <div class="step"><span class="step-label">INDEPENDENCE →</span> \(E[XY] = E[X]E[Y]\), so the two terms cancel.</div>
+            <div class="step"><span class="step-label">CONVERSE FAILS →</span> e.g. \(X\) symmetric about 0 and \(Y=X^2\): \(\text{Cov}=0\) but clearly dependent.</div>
+          </div>
+          <div class="example-answer">\(\text{Cov} = 0\) (but \(\text{Cov}=0 \not\Rightarrow\) independent!)</div>
+        </div>
       </div>
     </div>
 
@@ -597,9 +831,44 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Given \(\text{Cov}(X,Y) = 6\), \(\sigma_X = 3\), \(\sigma_Y = 4\). What is the correlation \(\rho\)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\rho = 6/(3 \times 4)\)</div>
-        <div class="example-answer">\(= 0.5\)</div>
+        <div class="example-q">Given \(\text{Cov}(X,Y) = 6\), \(\sigma_X = 3\), \(\sigma_Y = 4\), what is the correlation \(\rho\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">NORMALIZE →</span> \(\rho = \text{Cov}(X,Y)/(\sigma_X\sigma_Y)\).</div>
+            <div class="step"><span class="step-label">PLUG IN →</span> \(6/(3 \times 4) = 6/12\).</div>
+          </div>
+          <div class="example-answer">\(= 0.5\) (moderate positive linear association)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conditional Expectation -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-fundamental">Fundamental</div>
+        <div class="card-name">Conditional Expectation <span class="sub">\(E[X \mid Y]\)</span></div>
+        <div class="card-intuition">\(E[X\mid Y]\) is itself a <em>random variable</em> — your best estimate of \(X\) once \(Y\) is known. It collapses to a single number only after \(Y\) is observed.</div>
+        <div class="formula-box blue" style="text-align:left;padding-left:24px;">
+          <div style="line-height:2.4;">
+            <strong style="color:var(--accent-blue);font-size:12px;">Tower:</strong> \(\;E\big[E[X\mid Y]\big] = E[X]\)<br>
+            <strong style="color:var(--accent-blue);font-size:12px;">Take out what's known:</strong> \(\;E[g(Y)\,X \mid Y] = g(Y)\,E[X\mid Y]\)<br>
+            <strong style="color:var(--accent-blue);font-size:12px;">Independence:</strong> \(\;X \perp Y \;\Rightarrow\; E[X\mid Y] = E[X]\)
+          </div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Two fair dice \(X_1, X_2\). Find \(E[X_1 \mid X_1 + X_2 = 7]\).</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">SYMMETRY →</span> given the sum, \(X_1\) and \(X_2\) play identical roles (exchangeable).</div>
+            <div class="step"><span class="step-label">SO →</span> \(E[X_1\mid \text{sum}] = E[X_2\mid \text{sum}]\) and they add to the sum → each equals \(\text{sum}/2\).</div>
+            <div class="step"><span class="step-label">PLUG →</span> sum \(= 7 \Rightarrow 7/2\).</div>
+          </div>
+          <div class="example-answer">\(= 3.5\)</div>
+        </div>
       </div>
     </div>
 
@@ -620,12 +889,15 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">Use the MGF to find \(E[X]\) for \(X \sim \text{Poisson}(\lambda)\).</div>
-        <div class="example-steps">
-          <span class="step-label">MGF →</span> \(M(t) = e^{\lambda(e^t-1)}\)<br>
-          <span class="step-label">DERIVE →</span> \(M'(t) = \lambda e^t \cdot e^{\lambda(e^t-1)}\)<br>
-          <span class="step-label">EVALUATE →</span> \(M'(0) = \lambda \cdot 1 \cdot e^0\)
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">MGF →</span> \(M(t) = e^{\lambda(e^t-1)}\).</div>
+            <div class="step"><span class="step-label">DERIVE →</span> \(M'(t) = \lambda e^t \cdot e^{\lambda(e^t-1)}\).</div>
+            <div class="step"><span class="step-label">EVALUATE →</span> \(M'(0) = \lambda \cdot 1 \cdot e^0\)  (since \(E[X] = M'(0)\)).</div>
+          </div>
+          <div class="example-answer">\(E[X] = \lambda\)</div>
         </div>
-        <div class="example-answer">\(E[X] = \lambda\)</div>
       </div>
     </div>
 
@@ -670,6 +942,8 @@
       </div>
     </div>
 
+    <div class="subhead">Discrete</div>
+
     <!-- Binomial -->
     <div class="card">
       <div class="card-top">
@@ -688,8 +962,15 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">Flip a fair coin 10 times. What is \(P(\text{exactly 7 heads})\)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\binom{10}{7}(0.5)^{10} = 120/1024\)</div>
-        <div class="example-answer">\(\approx 0.117\)</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">CHOOSE →</span> \(\binom{10}{7}\) ways to place the 7 heads.</div>
+            <div class="step"><span class="step-label">EACH SEQ →</span> any specific sequence has prob \((\tfrac12)^7(\tfrac12)^3 = (\tfrac12)^{10}\).</div>
+            <div class="step"><span class="step-label">MULTIPLY →</span> \(120 \times \tfrac{1}{1024}\).</div>
+          </div>
+          <div class="example-answer">\(\approx 0.117\)</div>
+        </div>
       </div>
     </div>
 
@@ -711,9 +992,15 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Roll a die until you get a 6. What is the expected number of rolls? What is \(P(\text{success within 3 tries})\)?</div>
-        <div class="example-steps"><span class="step-label">E →</span> \(6\). <span class="step-label">CDF →</span> \(1 - (5/6)^3\)</div>
-        <div class="example-answer">\(E=6\); \(F(3) \approx 0.421\)</div>
+        <div class="example-q">Roll a die until the first 6. Expected number of rolls? And \(P(\text{success within 3 rolls})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">MEAN →</span> \(E = 1/p = 1/(1/6) = 6\).</div>
+            <div class="step"><span class="step-label">WITHIN 3 →</span> complement of "no 6 in 3 rolls": \(1 - (5/6)^3\).</div>
+          </div>
+          <div class="example-answer">\(E = 6\); \(\;F(3) \approx 0.421\)</div>
+        </div>
       </div>
     </div>
 
@@ -735,9 +1022,16 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Flip coins (\(p = 0.5\)) until you get 3 heads. What is \(P(\text{it takes exactly 5 flips})\)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\binom{4}{2}(0.5)^5 = 6/32\)</div>
-        <div class="example-answer">\(= 3/16 \approx 0.188\)</div>
+        <div class="example-q">Flip a fair coin until the 3rd head. What is \(P(\text{it takes exactly 5 flips})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">LAST FLIP →</span> flip 5 must be the 3rd head (fixed).</div>
+            <div class="step"><span class="step-label">FIRST 4 →</span> exactly 2 heads among them → \(\binom{4}{2}\) arrangements.</div>
+            <div class="step"><span class="step-label">PROBABILITY →</span> \(\binom{4}{2}(0.5)^5 = 6/32\).</div>
+          </div>
+          <div class="example-answer">\(= 3/16 \approx 0.188\)</div>
+        </div>
       </div>
     </div>
 
@@ -758,9 +1052,16 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">A server gets 3 requests per minute on average. What is \(P(\text{at most 2 in a given minute})\)?</div>
-        <div class="example-steps"><span class="step-label">CDF →</span> \(e^{-3}(1 + 3 + 4.5)\)</div>
-        <div class="example-answer">\(\approx 0.423\)</div>
+        <div class="example-q">A server gets 3 requests/min on average. What is \(P(\text{at most 2 in a given minute})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">SET UP →</span> \(\lambda = 3\); want \(P(X \leq 2) = P(0)+P(1)+P(2)\).</div>
+            <div class="step"><span class="step-label">SUM →</span> \(e^{-3}\!\left(\tfrac{3^0}{0!} + \tfrac{3^1}{1!} + \tfrac{3^2}{2!}\right) = e^{-3}(1 + 3 + 4.5)\).</div>
+            <div class="step"><span class="step-label">EVALUATE →</span> \(e^{-3} \times 8.5 \approx 0.0498 \times 8.5\).</div>
+          </div>
+          <div class="example-answer">\(\approx 0.423\)</div>
+        </div>
       </div>
     </div>
 
@@ -782,11 +1083,46 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">A deck of 52 cards has 13 hearts. You draw 5 cards. What is \(P(\text{exactly 3 hearts})\)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(\binom{13}{3}\binom{39}{2}/\binom{52}{5}\)</div>
-        <div class="example-answer">\(\approx 0.0815\)</div>
+        <div class="example-q">A deck has 13 hearts among 52 cards. You draw 5. What is \(P(\text{exactly 3 hearts})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">CHOOSE HEARTS →</span> \(\binom{13}{3}\) ways.</div>
+            <div class="step"><span class="step-label">CHOOSE REST →</span> \(\binom{39}{2}\) non-hearts.</div>
+            <div class="step"><span class="step-label">DIVIDE →</span> by all 5-card hands \(\binom{52}{5}\): \(\;\binom{13}{3}\binom{39}{2}/\binom{52}{5}\).</div>
+          </div>
+          <div class="example-answer">\(\approx 0.0815\)</div>
+        </div>
       </div>
     </div>
+
+    <!-- Multinomial -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-distribution">Distribution</div>
+        <div class="card-name">Multinomial</div>
+        <div class="card-intuition">Binomial with more than two outcome types. Counts how many of \(n\) trials land in each of \(k\) categories.</div>
+        <div class="formula-box amber">
+          $$P(n_1,\dots,n_k) = \frac{n!}{n_1!\cdots n_k!}\, p_1^{n_1}\cdots p_k^{n_k}$$
+          <div class="formula-note">\(\sum_i n_i = n\), \(\;\sum_i p_i = 1\). Each \(n_i \sim \text{Bin}(n, p_i)\) marginally.</div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Roll a fair die 12 times. What is \(P(\text{each face appears exactly twice})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">ARRANGE →</span> \(\dfrac{12!}{(2!)^6}\) ways to assign which rolls show which face.</div>
+            <div class="step"><span class="step-label">EACH PATTERN →</span> probability \((1/6)^{12}\).</div>
+            <div class="step"><span class="step-label">MULTIPLY →</span> \(\dfrac{12!}{(2!)^6}\,(1/6)^{12}\).</div>
+          </div>
+          <div class="example-answer">\(\approx 0.00344\)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subhead">Continuous</div>
 
     <!-- Normal -->
     <div class="card">
@@ -807,9 +1143,15 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Heights are distributed as \(N(170, 10^2)\) cm. What is \(P(\text{height} \leq 185)\)?</div>
-        <div class="example-steps"><span class="step-label">Z →</span> \(1.5\) → <span class="step-label">CDF →</span> \(\Phi(1.5)\)</div>
-        <div class="example-answer">\(\approx 0.933\)</div>
+        <div class="example-q">Heights follow \(N(170, 10^2)\) cm. What is \(P(\text{height} \leq 185)\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">STANDARDIZE →</span> \(Z = (185 - 170)/10 = 1.5\).</div>
+            <div class="step"><span class="step-label">LOOK UP →</span> \(\Phi(1.5)\).</div>
+          </div>
+          <div class="example-answer">\(\approx 0.933\)</div>
+        </div>
       </div>
     </div>
 
@@ -849,13 +1191,16 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">Let \(X \sim N(50, 8^2)\). Find \(P(34 < X \leq 62)\) using \(\Phi\) notation.</div>
-        <div class="example-steps">
-          <span class="step-label">STANDARDIZE →</span> \(Z_1 = \frac{34 - 50}{8} = -2\), \(\quad Z_2 = \frac{62 - 50}{8} = 1.5\)<br>
-          <span class="step-label">INTERVAL →</span> \(P(34 < X \leq 62) = \Phi(1.5) - \Phi(-2)\)<br>
-          <span class="step-label">SYMMETRY →</span> \(\Phi(-2) = 1 - \Phi(2) = 1 - 0.9772 = 0.0228\)<br>
-          <span class="step-label">COMPUTE →</span> \(0.9332 - 0.0228\)
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">STANDARDIZE →</span> \(Z_1 = \frac{34 - 50}{8} = -2\), \(\quad Z_2 = \frac{62 - 50}{8} = 1.5\).</div>
+            <div class="step"><span class="step-label">INTERVAL →</span> \(P(34 < X \leq 62) = \Phi(1.5) - \Phi(-2)\).</div>
+            <div class="step"><span class="step-label">SYMMETRY →</span> \(\Phi(-2) = 1 - \Phi(2) = 1 - 0.9772 = 0.0228\).</div>
+            <div class="step"><span class="step-label">COMPUTE →</span> \(0.9332 - 0.0228\).</div>
+          </div>
+          <div class="example-answer">\(= 0.9104\) (91.04%)</div>
         </div>
-        <div class="example-answer">\(= 0.9104\) (91.04%)</div>
       </div>
     </div>
 
@@ -876,9 +1221,15 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">A bus comes every 15 minutes. You arrive at a random time. What is \(P(\text{wait} \leq 5 \text{ min})\)?</div>
-        <div class="example-steps"><span class="step-label">CDF →</span> \((5-0)/(15-0)\)</div>
-        <div class="example-answer">\(= 1/3 \approx 0.333\)</div>
+        <div class="example-q">A bus arrives every 15 minutes; you show up at a random time. What is \(P(\text{wait} \leq 5 \text{ min})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">MODEL →</span> wait \(\sim \text{Uniform}(0, 15)\).</div>
+            <div class="step"><span class="step-label">CDF →</span> \(P(W \leq 5) = (5-0)/(15-0)\).</div>
+          </div>
+          <div class="example-answer">\(= 1/3 \approx 0.333\)</div>
+        </div>
       </div>
     </div>
 
@@ -900,9 +1251,119 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Calls arrive at rate \(\lambda = 2\) per hour. What is \(P(\text{wait for next call} \leq 30 \text{ min})\)?</div>
-        <div class="example-steps"><span class="step-label">CDF →</span> \(1 - e^{-2(0.5)} = 1 - e^{-1}\)</div>
-        <div class="example-answer">\(\approx 0.632\)</div>
+        <div class="example-q">Calls arrive at rate \(\lambda = 2\)/hour. What is \(P(\text{next call within 30 min})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">CONVERT →</span> 30 min \(= 0.5\) hr.</div>
+            <div class="step"><span class="step-label">CDF →</span> \(1 - e^{-\lambda t} = 1 - e^{-2(0.5)} = 1 - e^{-1}\).</div>
+          </div>
+          <div class="example-answer">\(\approx 0.632\)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Beta -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-distribution">Distribution</div>
+        <div class="card-name">Beta</div>
+        <div class="card-intuition">Lives on \([0,1]\) — a flexible model for an unknown proportion or probability. It's the conjugate prior for Bernoulli/Binomial, so it's the Bayesian's workhorse.</div>
+        <div class="formula-box amber">
+          $$f(x) \propto x^{\alpha-1}(1-x)^{\beta-1}, \quad x \in [0,1]$$
+          <div class="formula-note">\(E = \dfrac{\alpha}{\alpha+\beta}\). Note \(\text{Uniform}(0,1) = \text{Beta}(1,1)\).</div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">With a \(\text{Uniform}(0,1)\) prior on \(p\), you observe 3 heads in 5 flips. What is the posterior mean of \(p\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">CONJUGACY →</span> prior \(\text{Beta}(1,1)\) + (3 heads, 2 tails) → posterior \(\text{Beta}(1{+}3,\, 1{+}2) = \text{Beta}(4,3)\).</div>
+            <div class="step"><span class="step-label">MEAN →</span> \(\alpha/(\alpha+\beta) = 4/7\).</div>
+          </div>
+          <div class="example-answer">\(= 4/7 \approx 0.571\) (shrunk from the naive \(3/5\) toward \(\tfrac12\))</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gamma -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-distribution">Distribution</div>
+        <div class="card-name">Gamma</div>
+        <div class="card-intuition">The waiting time until the \(k\)-th event of a Poisson process — equivalently, a sum of \(k\) independent \(\text{Exp}(\lambda)\) gaps.</div>
+        <div class="formula-box amber">
+          $$f(x) = \frac{\lambda^k x^{k-1} e^{-\lambda x}}{(k-1)!}, \quad x \geq 0$$
+          <div class="formula-note">\(E = k/\lambda \quad \text{Var} = k/\lambda^2\). \(\;\text{Gamma}(1,\lambda) = \text{Exp}(\lambda)\).</div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Calls arrive at rate \(\lambda = 2\)/hr. What is the expected wait until the 3rd call?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">SUM OF GAPS →</span> \(T = \) sum of 3 iid \(\text{Exp}(2)\) waits \(\sim \text{Gamma}(3, 2)\).</div>
+            <div class="step"><span class="step-label">MEAN →</span> \(k/\lambda = 3/2\).</div>
+          </div>
+          <div class="example-answer">\(= 1.5\) hours</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subhead">Sampling &amp; Processes</div>
+
+    <!-- Order Statistics -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-fundamental">Sampling</div>
+        <div class="card-name">Order Statistics</div>
+        <div class="card-intuition">Sort a sample; the \(k\)-th smallest value is the \(k\)-th order statistic \(X_{(k)}\). For \(n\) iid uniforms they land at evenly spaced expected positions.</div>
+        <div class="formula-box blue">
+          $$F_{\max}(x) = F(x)^n, \qquad F_{\min}(x) = 1 - \big(1 - F(x)\big)^n$$
+          <div class="formula-note">For \(\text{Uniform}(0,1)\): \(\;E[X_{(k)}] = \dfrac{k}{n+1}\), and \(X_{(k)} \sim \text{Beta}(k,\, n-k+1)\).</div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Three iid \(\text{Uniform}(0,1)\) draws. Find \(E[\min]\), \(E[\text{median}]\), \(E[\max]\), and \(E[\text{range}]\).</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">SPACING →</span> \(E[X_{(k)}] = k/(n+1)\) with \(n = 3\).</div>
+            <div class="step"><span class="step-label">VALUES →</span> min \(= 1/4\), median \(= 2/4\), max \(= 3/4\).</div>
+            <div class="step"><span class="step-label">RANGE →</span> \(E[\max] - E[\min] = 3/4 - 1/4\).</div>
+          </div>
+          <div class="example-answer">\(\tfrac14,\ \tfrac12,\ \tfrac34;\quad E[\text{range}] = \tfrac12\)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Poisson Process -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-fundamental">Process</div>
+        <div class="card-name">Poisson Process</div>
+        <div class="card-intuition">Events arriving "completely at random" at rate \(\lambda\). Counts in disjoint intervals are independent Poisson; the gaps between events are Exponential.</div>
+        <div class="formula-box blue">
+          $$N(t) \sim \text{Poisson}(\lambda t), \qquad \text{gaps} \sim \text{Exp}(\lambda)$$
+          <div class="formula-note"><strong>Superposition:</strong> independent rates add \((\lambda_1{+}\lambda_2)\). <strong>Thinning:</strong> keep each event w.p. \(p\) → \(\text{Poisson}(\lambda p)\).</div>
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Two independent streams are Poisson with \(\lambda_1 = 3\)/min, \(\lambda_2 = 2\)/min. \(P(\text{next event is from stream 1})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">COMPETE →</span> the next event is whichever exponential gap fires first.</div>
+            <div class="step"><span class="step-label">WINNER →</span> \(P = \lambda_1/(\lambda_1 + \lambda_2)\).</div>
+            <div class="step"><span class="step-label">PLUG →</span> \(3/(3+2)\).</div>
+          </div>
+          <div class="example-answer">\(= 3/5 = 0.6\)</div>
+        </div>
       </div>
     </div>
 
@@ -931,12 +1392,15 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">You roll a fair die 100 times. What is \(P(\text{sample average} > 3.7)\)?</div>
-        <div class="example-steps">
-          <span class="step-label">PARAMS →</span> \(\mu = 3.5\), \(\sigma^2 = 35/12\), \(n=100\)<br>
-          <span class="step-label">CLT →</span> \(Z = \frac{3.7-3.5}{\sqrt{35/12}/10} = \frac{0.2}{0.1708} \approx 1.17\)<br>
-          <span class="step-label">LOOKUP →</span> \(P(Z > 1.17) \approx 1 - 0.879\)
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">PARAMS →</span> \(\mu = 3.5\), \(\sigma^2 = 35/12\), \(n = 100\), so \(\text{SE} = \sigma/\sqrt{n} = \sqrt{35/12}/10 \approx 0.171\).</div>
+            <div class="step"><span class="step-label">STANDARDIZE →</span> \(Z = \dfrac{3.7 - 3.5}{0.171} \approx 1.17\).</div>
+            <div class="step"><span class="step-label">TAIL →</span> \(P(Z > 1.17) = 1 - \Phi(1.17) \approx 1 - 0.879\).</div>
+          </div>
+          <div class="example-answer">\(\approx 0.121\)</div>
         </div>
-        <div class="example-answer">\(\approx 0.121\)</div>
       </div>
     </div>
 
@@ -954,8 +1418,14 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">Flip a fair coin 1,000,000 times. What does the proportion of Heads approach?</div>
-        <div class="example-steps"><span class="step-label">LLN →</span> \(\bar{X}_n \to E[X] = 0.5\)</div>
-        <div class="example-answer">\(\to 0.5\) (with probability 1)</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">SET UP →</span> the sample mean of 0/1 flips <em>is</em> the proportion of heads.</div>
+            <div class="step"><span class="step-label">LLN →</span> \(\bar{X}_n \to E[X] = 0.5\).</div>
+          </div>
+          <div class="example-answer">\(\to 0.5\) (with probability 1)</div>
+        </div>
       </div>
     </div>
 
@@ -972,8 +1442,14 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">\(X \geq 0\) with \(E[X] = 10\). What is an upper bound on \(P(X \geq 50)\)?</div>
-        <div class="example-steps"><span class="step-label">MARKOV →</span> \(P(X \geq 50) \leq 10/50\)</div>
-        <div class="example-answer">\(\leq 0.2\)</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">MARKOV →</span> \(P(X \geq a) \leq E[X]/a\).</div>
+            <div class="step"><span class="step-label">PLUG →</span> \(10/50\).</div>
+          </div>
+          <div class="example-answer">\(\leq 0.2\)</div>
+        </div>
       </div>
     </div>
 
@@ -990,9 +1466,15 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">\(X\) has mean \(\mu = 100\) and standard deviation \(\sigma = 15\). What is an upper bound on \(P(|X - 100| \geq 45)\)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(k = 45/15 = 3\) → \(P \leq 1/9\)</div>
-        <div class="example-answer">\(\leq 1/9 \approx 0.111\)</div>
+        <div class="example-q">\(X\) has mean \(\mu = 100\), standard deviation \(\sigma = 15\). Upper bound on \(P(|X - 100| \geq 45)\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">IN SD UNITS →</span> \(45 = k\sigma \Rightarrow k = 45/15 = 3\).</div>
+            <div class="step"><span class="step-label">BOUND →</span> \(P \leq 1/k^2 = 1/9\).</div>
+          </div>
+          <div class="example-answer">\(\leq 1/9 \approx 0.111\)</div>
+        </div>
       </div>
     </div>
 
@@ -1010,8 +1492,14 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">Show \(E[X^2] \geq (E[X])^2\).</div>
-        <div class="example-steps"><span class="step-label">JENSEN →</span> \(g(x) = x^2\) is convex, so \(g(E[X]) \leq E[g(X)]\)</div>
-        <div class="example-answer">\((E[X])^2 \leq E[X^2]\) → This proves \(\text{Var}(X) \geq 0\)!</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">CONVEX →</span> \(g(x) = x^2\) is convex.</div>
+            <div class="step"><span class="step-label">JENSEN →</span> \(g(E[X]) \leq E[g(X)] \Rightarrow (E[X])^2 \leq E[X^2]\).</div>
+          </div>
+          <div class="example-answer">This is exactly \(\text{Var}(X) = E[X^2] - (E[X])^2 \geq 0\)</div>
+        </div>
       </div>
     </div>
 
@@ -1029,8 +1517,15 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">Prove \(|\rho_{X,Y}| \leq 1\).</div>
-        <div class="example-steps"><span class="step-label">APPLY →</span> \(|\text{Cov}(X,Y)|^2 \leq \text{Var}(X)\text{Var}(Y)\) by C-S</div>
-        <div class="example-answer">\(|\rho| = |\text{Cov}|/(\sigma_X\sigma_Y) \leq 1\;\checkmark\)</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">C-S →</span> \(\big(\text{Cov}(X,Y)\big)^2 \leq \text{Var}(X)\,\text{Var}(Y)\).</div>
+            <div class="step"><span class="step-label">ROOT →</span> \(|\text{Cov}(X,Y)| \leq \sigma_X \sigma_Y\).</div>
+            <div class="step"><span class="step-label">DIVIDE →</span> \(|\rho| = |\text{Cov}|/(\sigma_X\sigma_Y) \leq 1\).</div>
+          </div>
+          <div class="example-answer">\(|\rho| \leq 1\;\checkmark\)</div>
+        </div>
       </div>
     </div>
 
@@ -1056,8 +1551,15 @@
       <div class="example-block">
         <div class="example-tag">Example</div>
         <div class="example-q">What is the probability that at least 2 of 23 people share a birthday?</div>
-        <div class="example-steps"><span class="step-label">COMPLEMENT →</span> \(P(\text{all diff}) \approx 0.4927\)</div>
-        <div class="example-answer">\(\approx 0.5073\) — just 23!</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">COMPLEMENT →</span> easier to compute "all 23 distinct."</div>
+            <div class="step"><span class="step-label">ALL DISTINCT →</span> \(\tfrac{365}{365}\cdot\tfrac{364}{365}\cdots\tfrac{343}{365} \approx 0.4927\).</div>
+            <div class="step"><span class="step-label">SUBTRACT →</span> \(1 - 0.4927\).</div>
+          </div>
+          <div class="example-answer">\(\approx 0.507\) — barely 23 people!</div>
+        </div>
       </div>
     </div>
 
@@ -1073,9 +1575,16 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">4 letters are placed randomly in 4 envelopes. What is \(P(\text{no letter is in the correct envelope})\)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(D_4 = 9\), \(P = 9/24\)</div>
-        <div class="example-answer">\(= 3/8 = 0.375\)</div>
+        <div class="example-q">4 letters are placed randomly in 4 envelopes. What is \(P(\text{no letter in its correct envelope})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">COUNT →</span> derangements \(D_4 = 9\).</div>
+            <div class="step"><span class="step-label">TOTAL →</span> permutations \(4! = 24\).</div>
+            <div class="step"><span class="step-label">DIVIDE →</span> \(9/24\).</div>
+          </div>
+          <div class="example-answer">\(= 3/8 = 0.375\) (\(\approx 1/e\))</div>
+        </div>
       </div>
     </div>
 
@@ -1091,9 +1600,15 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">A cereal box contains one of 6 different toys. How many boxes do you expect to buy to collect all 6?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(6 \times 2.45\)</div>
-        <div class="example-answer">\(= 14.7\) boxes</div>
+        <div class="example-q">A cereal box contains one of 6 different toys (uniform at random). Expected boxes to collect all 6?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">STAGE i →</span> after \(i{-}1\) distinct toys, \(P(\text{new}) = \tfrac{6-(i-1)}{6}\); the wait is Geometric with mean \(\tfrac{6}{6-i+1}\).</div>
+            <div class="step"><span class="step-label">SUM →</span> \(6\big(1 + \tfrac12 + \tfrac13 + \tfrac14 + \tfrac15 + \tfrac16\big) = 6\,H_6\), and \(H_6 \approx 2.45\).</div>
+          </div>
+          <div class="example-answer">\(= 14.7\) boxes</div>
+        </div>
       </div>
     </div>
 
@@ -1108,9 +1623,15 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Fair coin flips. You start with $4, goal is $10. What is \(P(\text{reaching \$10 before going broke})\)?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(4/10\)</div>
-        <div class="example-answer">\(= 0.4\)</div>
+        <div class="example-q">Fair coin, \$1 per round. You start with \$4, target \$10. \(P(\text{reach \$10 before \$0})\)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">FAIR GAME →</span> with \(p = q\), the ruin formula collapses to \(P_i = i/N\).</div>
+            <div class="step"><span class="step-label">PLUG →</span> \(i = 4\), \(N = 10\) → \(4/10\).</div>
+          </div>
+          <div class="example-answer">\(= 0.4\)</div>
+        </div>
       </div>
     </div>
 
@@ -1125,9 +1646,15 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example</div>
-        <div class="example-q">Shuffle a deck of 52 cards. What is the expected number of cards that end up in their original position?</div>
-        <div class="example-steps"><span class="step-label">SOLVE →</span> \(52 \times 1/52\)</div>
-        <div class="example-answer">\(= 1\) (always!)</div>
+        <div class="example-q">Shuffle 52 cards. What is the expected number of cards that end up in their original position?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">INDICATOR →</span> \(\mathbf{1}_i = 1\) if card \(i\) returns to slot \(i\); \(P(\mathbf{1}_i) = 1/52\).</div>
+            <div class="step"><span class="step-label">LINEARITY →</span> \(E[X] = \sum_{i=1}^{52} P(\mathbf{1}_i) = 52 \times \tfrac{1}{52}\) (no independence needed).</div>
+          </div>
+          <div class="example-answer">\(= 1\) (independent of deck size!)</div>
+        </div>
       </div>
     </div>
 
@@ -1148,9 +1675,15 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Example — Vandermonde</div>
-        <div class="example-q">Choose 3 people from a group of 5 men and 7 women. Verify Vandermonde: \(\binom{12}{3} = \sum \binom{5}{k}\binom{7}{3-k}\).</div>
-        <div class="example-steps"><span class="step-label">EXPAND →</span> \(35+105+70+10\)</div>
-        <div class="example-answer">\(= 220 = \binom{12}{3}\;\checkmark\)</div>
+        <div class="example-q">Choose 3 from 5 men and 7 women. Verify Vandermonde: \(\binom{12}{3} = \sum_k \binom{5}{k}\binom{7}{3-k}\).</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">SPLIT →</span> by number of men chosen, \(k = 0,1,2,3\): \(\binom{5}{0}\binom{7}{3} + \binom{5}{1}\binom{7}{2} + \binom{5}{2}\binom{7}{1} + \binom{5}{3}\binom{7}{0}\).</div>
+            <div class="step"><span class="step-label">COMPUTE →</span> \(35 + 105 + 70 + 10\).</div>
+          </div>
+          <div class="example-answer">\(= 220 = \binom{12}{3}\;\checkmark\)</div>
+        </div>
       </div>
     </div>
 
@@ -1165,13 +1698,67 @@
       </div>
       <div class="example-block">
         <div class="example-tag">Classic Interview Example</div>
-        <div class="example-q">What is the expected number of coin flips to get two Heads in a row?</div>
-        <div class="example-steps">
-          <span class="step-label">E₀ →</span> \(E_0 = 1 + \frac{1}{2}E_1 + \frac{1}{2}E_0\)<br>
-          <span class="step-label">E₁ →</span> \(E_1 = 1 + \frac{1}{2}E_0\)<br>
-          <span class="step-label">SOLVE →</span> \(E_0 = 6\)
+        <div class="example-q">What is the expected number of fair-coin flips to get two Heads in a row (HH)?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">STATES →</span> Let \(E_0\) = expected flips from "no progress", \(E_1\) = expected flips after seeing one H.</div>
+            <div class="step"><span class="step-label">FROM \(E_0\) →</span> Flip once: H (prob \(\tfrac12\)) advances to \(E_1\), T (prob \(\tfrac12\)) stays at \(E_0\). So \(E_0 = 1 + \tfrac12 E_1 + \tfrac12 E_0\).</div>
+            <div class="step"><span class="step-label">FROM \(E_1\) →</span> Flip once: H finishes, T sends you back to \(E_0\). So \(E_1 = 1 + \tfrac12 E_0\).</div>
+            <div class="step"><span class="step-label">SOLVE →</span> Sub in: \(E_0 = 1 + \tfrac12\!\left(1 + \tfrac12 E_0\right) + \tfrac12 E_0 = \tfrac32 + \tfrac34 E_0\), so \(\tfrac14 E_0 = \tfrac32\).</div>
+          </div>
+          <div class="example-answer">\(E[\text{HH}] = 6\) flips</div>
         </div>
-        <div class="example-answer">\(E[\text{HH}] = 6\)</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-advanced">★ Classic trap</div>
+        <div class="card-name">Waiting Time for Patterns (HH vs HT)</div>
+        <div class="card-intuition">Surprise: HH takes longer than HT, even though both have probability \(\tfrac14\) on any two flips. Overlap is the culprit.</div>
+        <div class="formula-box rose">
+          $$E[\text{HH}] = 6, \qquad E[\text{HT}] = 4$$
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Example</div>
+        <div class="example-q">Why is the expected wait for HT only 4 flips, while HH needs 6?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">HT IDEA →</span> Wait for the first H (geometric, \(E = 2\)). Now wait for a T. While waiting, any extra H is harmless — you still "have an H", so you never restart.</div>
+            <div class="step"><span class="step-label">HT TOTAL →</span> \(E[\text{HT}] = \underbrace{2}_{\text{first H}} + \underbrace{2}_{\text{then a T}} = 4\).</div>
+            <div class="step"><span class="step-label">HH IDEA →</span> Wait for the first H (\(E = 2\)). You need H again immediately; a T here wipes out your progress and you start over.</div>
+            <div class="step"><span class="step-label">HH SOLVE →</span> That restart penalty gives \(E[\text{HH}] = 6\) (see Tower Property). Self-overlapping patterns always cost more.</div>
+          </div>
+          <div class="example-answer">HT cannot overlap itself → 4; HH can → 6</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div class="card-label label-identity">Technique</div>
+        <div class="card-name">Geometric Probability</div>
+        <div class="card-intuition">When outcomes are uniform over a continuous region, probability = favorable area ÷ total area. Draw the square.</div>
+        <div class="formula-box green">
+          $$P(\text{event}) = \frac{\text{favorable area}}{\text{total area}}$$
+        </div>
+      </div>
+      <div class="example-block">
+        <div class="example-tag">Classic Interview Example</div>
+        <div class="example-q">Two people each arrive at a uniformly random time between 12:00 and 1:00 and wait 15 min for the other. What is the probability they meet?</div>
+        <button class="reveal-btn" type="button"><span class="rb-label">Show solution</span></button>
+        <div class="solution">
+          <div class="example-steps">
+            <div class="step"><span class="step-label">SETUP →</span> Let \(X, Y \sim \text{Uniform}(0,1)\) hours be the two arrival times. The sample space is the unit square (area 1).</div>
+            <div class="step"><span class="step-label">MEET →</span> They meet iff \(|X - Y| \le \tfrac14\) — a diagonal band across the square.</div>
+            <div class="step"><span class="step-label">COMPLEMENT →</span> The two "miss" corners are right triangles with legs \(\tfrac34\), so missing area \(= 2\cdot\tfrac12\left(\tfrac34\right)^2 = \tfrac{9}{16}\).</div>
+            <div class="step"><span class="step-label">ANSWER →</span> \(P(\text{meet}) = 1 - \tfrac{9}{16} = \tfrac{7}{16}\).</div>
+          </div>
+          <div class="example-answer">\(P(\text{meet}) = \dfrac{7}{16} \approx 0.4375\)</div>
+        </div>
       </div>
     </div>
 
@@ -1187,7 +1774,7 @@
               <tr><td>Arrange all items in a line</td><td>\(n!\)</td><td>All items, order matters</td></tr>
               <tr><td>Pick \(r\) from \(n\), order matters</td><td>\(P(n,r)\)</td><td>"first, second, third…"</td></tr>
               <tr><td>Pick \(r\) from \(n\), order doesn't matter</td><td>\(\binom{n}{r}\)</td><td>"choose", "committee"</td></tr>
-              <tr><td>\(r\) from \(n\) types, repeats OK</td><td>\(n^r\) or \(\binom{n+r-1}{r}\)</td><td>Order → \(n^r\); no order → Stars&Bars</td></tr>
+              <tr><td>\(r\) from \(n\) types, repeats OK</td><td>\(n^r\) or \(\binom{n+r-1}{r}\)</td><td>Order → \(n^r\); no order → Stars &amp; Bars</td></tr>
               <tr><td>"At least one" probability</td><td>\(1 - P(\text{none})\)</td><td>Complement</td></tr>
               <tr><td>Update belief after evidence</td><td>Bayes' Theorem</td><td>"given that", reverse conditional</td></tr>
               <tr><td>Expected count</td><td>Indicators + Linearity</td><td>"expected number of…"</td></tr>
@@ -1195,6 +1782,12 @@
               <tr><td>\(P(X \leq k)\), cumulative prob</td><td>CDF \(F(k)\)</td><td>"at most", "within", "no more than"</td></tr>
               <tr><td>Approximate sum/average of many RVs</td><td>CLT → Normal</td><td>Large \(n\), any distribution</td></tr>
               <tr><td>Bound probability without full dist.</td><td>Markov / Chebyshev</td><td>"at most how likely", worst-case</td></tr>
+              <tr><td>\(E\) of a max or min</td><td>Tail-sum \(\sum P(X \ge k)\)</td><td>"expected largest/smallest"</td></tr>
+              <tr><td>Variance of a two-stage / random sum</td><td>Law of Total Variance</td><td>Random count, then random draws</td></tr>
+              <tr><td>Best guess given partial info</td><td>\(E[X \mid Y]\)</td><td>"given … , what do you expect"</td></tr>
+              <tr><td>\(k\)-th smallest/largest of a sample</td><td>Order statistics</td><td>"median", "min", "\(k\)-th of \(n\)"</td></tr>
+              <tr><td>Probability over a continuous region</td><td>Geometric probability</td><td>"random time/point", "they meet"</td></tr>
+              <tr><td>Wait for the \(k\)-th continuous event</td><td>Gamma \((\text{sum of Exp})\)</td><td>"time until 3rd arrival"</td></tr>
             </tbody>
           </table>
         </div>
@@ -1213,6 +1806,25 @@
     renderMathInElement(document.body, {
       delimiters: [{left:"$$",right:"$$",display:true},{left:"\\(",right:"\\)",display:false}],
       throwOnError: false
+    });
+
+    // Per-example solution reveal
+    document.querySelectorAll('.reveal-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var block = btn.closest('.example-block');
+        var shown = block.classList.toggle('revealed');
+        btn.querySelector('.rb-label').textContent = shown ? 'Hide solution' : 'Show solution';
+      });
+    });
+
+    // Reveal-all toggle
+    var revealAll = document.getElementById('revealAll');
+    var allShown = false;
+    revealAll.addEventListener('click', function(){
+      allShown = !allShown;
+      document.querySelectorAll('.example-block').forEach(function(b){ b.classList.toggle('revealed', allShown); });
+      document.querySelectorAll('.reveal-btn .rb-label').forEach(function(l){ l.textContent = allShown ? 'Hide solution' : 'Show solution'; });
+      revealAll.querySelector('.ra-text').textContent = allShown ? 'Hide all' : 'Reveal all';
     });
   });
   const toggle = document.getElementById('themeToggle');
